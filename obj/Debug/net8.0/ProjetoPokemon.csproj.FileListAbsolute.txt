@@ -1,0 +1,14 @@
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\bin\Debug\net8.0\ProjetoPokemon.exe
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\bin\Debug\net8.0\ProjetoPokemon.deps.json
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\bin\Debug\net8.0\ProjetoPokemon.runtimeconfig.json
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\bin\Debug\net8.0\ProjetoPokemon.dll
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\bin\Debug\net8.0\ProjetoPokemon.pdb
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.AssemblyInfoInputs.cache
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.AssemblyInfo.cs
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.csproj.CoreCompileInputs.cache
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.dll
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\refint\ProjetoPokemon.dll
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.pdb
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ProjetoPokemon.genruntimeconfig.cache
+C:\Users\kleil\OneDrive\Documentos\ProjetosC\ProjetoPokemon\obj\Debug\net8.0\ref\ProjetoPokemon.dll
