@@ -7,16 +7,8 @@
       "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\background.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\background.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\colortoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\colortoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\typepokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,12 +23,20 @@
       "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\effectmove.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\projetopokemon.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:projetopokemon.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\ability.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\background.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\background.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|c:\\users\\kleil\\onedrive\\documentos\\projetosc\\projetopokemon\\entities\\enums\\colortoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A2C4A74-42A0-46AA-8D0B-394694A580DA}|ProjetoPokemon.csproj|solutionrelative:entities\\enums\\colortoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,7 +50,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "Background.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\Background.cs",
               "RelativeDocumentMoniker": "Entities\\Enums\\Background.cs",
@@ -58,12 +58,11 @@
               "RelativeToolTip": "Entities\\Enums\\Background.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:50:05.645Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:50:05.645Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 8,
               "Title": "ColorToken.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\ColorToken.cs",
               "RelativeDocumentMoniker": "Entities\\Enums\\ColorToken.cs",
@@ -71,86 +70,81 @@
               "RelativeToolTip": "Entities\\Enums\\ColorToken.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:48:48.724Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:48:48.724Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "Ability.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\Ability.cs",
               "RelativeDocumentMoniker": "Entities\\Enums\\Ability.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\Ability.cs",
               "RelativeToolTip": "Entities\\Enums\\Ability.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:44:35.15Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:44:35.15Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 4,
               "Title": "EffectMove.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\EffectMove.cs",
               "RelativeDocumentMoniker": "Entities\\EffectMove.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\EffectMove.cs",
               "RelativeToolTip": "Entities\\EffectMove.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:42:23.499Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:42:23.499Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAAABcAAABfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-09T04:34:58.759Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "Move.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Move.cs",
               "RelativeDocumentMoniker": "Entities\\Move.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Move.cs",
               "RelativeToolTip": "Entities\\Move.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA7AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:39:51.249Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:39:51.249Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "TypePokemon.cs",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\TypePokemon.cs",
               "RelativeDocumentMoniker": "Entities\\Enums\\TypePokemon.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Enums\\TypePokemon.cs",
               "RelativeToolTip": "Entities\\Enums\\TypePokemon.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBQAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAqwBQAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-09T04:33:46.577Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ProjetoPokemon",
+              "DocumentIndex": 5,
+              "Title": "ProjetoPokemon.csproj",
               "DocumentMoniker": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\ProjetoPokemon.csproj",
               "RelativeDocumentMoniker": "ProjetoPokemon.csproj",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\ProjetoPokemon.csproj",
               "RelativeToolTip": "ProjetoPokemon.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-09T04:32:57.141Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:32:57.141Z"
             },
             {
               "$type": "Document",
@@ -160,7 +154,7 @@
               "RelativeDocumentMoniker": "Entities\\Pokemon.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Pokemon.cs",
               "RelativeToolTip": "Entities\\Pokemon.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAABgAAAAAAAAAAAAiwDcAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-18T14:08:42.896Z",
               "EditorCaption": ""

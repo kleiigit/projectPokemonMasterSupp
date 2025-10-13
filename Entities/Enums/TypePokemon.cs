@@ -25,6 +25,7 @@ namespace ProjetoPokemon.Entities.Enums
         Rock,
         Bug,
         Ghost,
-        Steel
+        Steel,
+        None
     }
 }

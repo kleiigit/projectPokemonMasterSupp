@@ -4,10 +4,11 @@ namespace ProjetoPokemon.Entities
 {
     internal class Move
     {
-        public TypePokemon Type; // tipo do movimento
-        public string Name; // nome do movimento
-        public int Power; // poder do movimento
-        public List<EffectMove> Effects; // efeitos do movimento
-        public int DiceSides; // lados do dado do movimento
+        public int MoveID { get; set; }
+        public TypePokemon Type { get; set; } // tipo do movimento
+        public string Name { get; set; } // nome do movimento
+        public int Power { get; set; } // poder do movimento
+        public List<EffectMove> Effects = new List<EffectMove>(); // efeitos do movimento
+        public int DiceSides { get; set; } // lados do dado do movimento
     }
 }
