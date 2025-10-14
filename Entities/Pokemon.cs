@@ -1,4 +1,5 @@
-﻿using ProjetoPokemon.Entities.Enums;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using ProjetoPokemon.Entities.Enums;
 
 namespace ProjetoPokemon.Entities
 {
@@ -17,16 +18,16 @@ namespace ProjetoPokemon.Entities
         public int CathRate { get; set; } // taxa de captura do pokémon
         public int Generation { get; set; } // geração do pokémon
         public ColorToken Color { get; set; } // cor do token do pokémon
-        public Background Background { get; set; } // background do pokémon
+        public TokenBackGround Background { get; set; } // background do pokémon
         public List<Ability> Abilities = new List<Ability>(); // lista de habilidades do pokémon
         //
         public bool Shiny { get; set; } // se o pokémon é shiny ou não
 
         public List<Move> Moves = new List<Move>(); // lista de movimentos do pokémon
 
-        public Pokemon(int numberID, string name, TypePokemon type, TypePokemon stabType, int stage, int toEvolvePokemon, string? form, 
+        public Pokemon(int numberID, string name, TypePokemon type, TypePokemon stabType, int stage, int toEvolvePokemon, string? form,
             int levelBase, int expToEvolve, int generation, ColorToken color,
-             Background background, List<Ability> abilities, bool shiny, List<Move> moves)
+             TokenBackGround background, List<Ability> abilities, bool shiny, List<Move> moves)
         {
             NumberID = numberID;
             Name = name;
@@ -57,11 +58,20 @@ namespace ProjetoPokemon.Entities
         override public string ToString()
         {
             string dualType = Type.ToString();
-            if(StabType != TypePokemon.None)
+            string pokemonDescription = $"{NumberID.ToString("D3")}# {Name}, {dualType} [Level: {LevelBase}, Color:{Color}] ";
+            for (int i = 0; i < Moves.Count; i++)
+            {
+                pokemonDescription += $"{Moves[i].Name} {Moves[i].Power}";
+                if (i < Moves.Count - 1)
+                    pokemonDescription += ", ";
+            }
+            if (StabType != TypePokemon.None)
             {
                 dualType += $"/{StabType}";
             }
-            return $"{NumberID}#{Name}, {dualType} [Level: {LevelBase}, Color:{Color}]";
+
+
+            return pokemonDescription;
         }
     }
 

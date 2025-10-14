@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjetoPokemon.Entities.Enums
 {
-    enum Background
+    enum TokenBackGround
     {
         Forest,
         Mountain,
@@ -19,5 +19,6 @@ namespace ProjetoPokemon.Entities.Enums
         Sky,
         Space,
         Meadow,
+        Prairie,
     }
 }

@@ -13,6 +13,6 @@ namespace ProjetoPokemon.Entities.Enums
         Yellow,
         Red,
         Green,
-        Orange
+        Legendary
     }
 }
