@@ -9,10 +9,10 @@ namespace ProjetoPokemon.Entities
         public string Name { get; set; } // nome do movimento
         public int Power { get; set; } // poder do movimento
         public List<EffectMove> Effects = new List<EffectMove>(); // efeitos do movimento
-        public string DiceSides { get; set; } // lados do dado do movimento
+        public int DiceSides { get; set; } // lados do dado do movimento
         public int EffectRoll { get; set; } // rolagem de efeito
 
-        public Move(int moveID, TypePokemon type, string name, int power, string diceSides)
+        public Move(int moveID, TypePokemon type, string name, int power, int diceSides)
         {
             MoveID = moveID;
             Type = type;
@@ -20,17 +20,30 @@ namespace ProjetoPokemon.Entities
             Power = power;
             DiceSides = diceSides;
         }
-        public Move(int moveID, TypePokemon type, string name, int power, List<EffectMove> effects, string diceSides, int efRoll)
+        public Move(int moveID, TypePokemon type, string name, int power, List<EffectMove> effects, int diceSides, int efRoll)
         {
             MoveID = moveID;
             Type = type;
             Name = name;
             Power = power;
             Effects = effects;
-            DiceSides = diceSides;
+            DiceSides = DiceSidesMove(diceSides);
             EffectRoll = efRoll;
         }
 
+
+        public static int DiceSidesMove(int diceSides)
+        {
+            if (diceSides == 0)
+                diceSides = 6;
+            return diceSides;
+        }
+
+        public static int StabMove(int powerM)
+        {
+            if (powerM != 0) powerM += 1;
+            return powerM;
+        }
         override public string ToString()
         {
             string EffectsDescription = "";
@@ -39,8 +52,11 @@ namespace ProjetoPokemon.Entities
                 EffectsDescription += effect.ToString();
                 if (effect != Effects[^1]) EffectsDescription += " | ";
             }
-            if (Effects.Count > 0) return $"{Name} - {Type} - Power: {Power} | Roll:{EffectRoll} ({EffectsDescription})";
-            else return $"{Name} - {Type} - Power: {Power}";
+            string moveStr = $"{Name} - {Type} - Power: {Power}";
+            if (DiceSides != 6) moveStr += $" (D{DiceSides})";
+            if (Effects.Count > 0) return moveStr + $" | Roll:{ EffectRoll} ({ EffectsDescription})";
+            else return moveStr;
         }
+       
     }
 }

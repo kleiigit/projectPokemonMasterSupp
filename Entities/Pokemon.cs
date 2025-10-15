@@ -1,5 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
-using ProjetoPokemon.Entities.Enums;
+﻿using ProjetoPokemon.Entities.Enums;
+using System.Linq;
 
 namespace ProjetoPokemon.Entities
 {
@@ -44,7 +44,20 @@ namespace ProjetoPokemon.Entities
             Background = background;
             Abilities = abilities;
             Shiny = shiny;
-            Moves = moves;
+
+
+            // Aplica o bônus de STAB automaticamente
+            Moves = new List<Move>();
+            foreach (var move in moves)
+            {
+                // Cria uma cópia do movimento com o bônus aplicado
+                var moveCopy = new Move(move.MoveID, move.Type, move.Name, move.Power, move.Effects, move.DiceSides, move.EffectRoll);
+
+                if (move.Type == Type || move.Type == StabType) moveCopy.Power = Move.StabMove(move.Power);
+                    
+
+                Moves.Add(moveCopy);
+            }
         }
 
         private int Catchrate()
@@ -54,6 +67,40 @@ namespace ProjetoPokemon.Entities
             else
                 return LevelBase + 2;
         }
+
+        public Move RandomMove()
+        {
+            if (Moves == null || Moves.Count == 0)
+                return null;
+            Random rnd = new Random();
+            return Moves[rnd.Next(Moves.Count)];
+        }
+
+        public Move SelectMove()
+        {
+            if (Moves == null || Moves.Count == 0)
+                return null;
+
+            Console.WriteLine("\nSelect a move of " + Name);
+            for (int i = 0; i < Moves.Count; i++)
+            {
+                Console.WriteLine($"{i}: {Moves[i]}");
+            }
+
+            // Solicita escolha do usuário
+            Console.Write("Digite o índice do item desejado: ");
+            if (int.TryParse(Console.ReadLine(), out int index) && index >= 0 && index < Moves.Count)
+            {
+                Move selected = Moves[index];
+                Console.WriteLine($"Você escolheu: {selected.Name}");
+                return selected;
+            }
+
+            Console.WriteLine("Índice inválido. Operação cancelada.");
+            return default!;
+        }
+        
+
 
         override public string ToString()
         {

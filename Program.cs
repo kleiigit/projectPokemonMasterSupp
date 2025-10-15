@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
-using ProjetoPokemon.Entities;
-using ProjetoPokemon.Entities.Enums;
-using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using ProjetoPokemon.Entities.Data;
+﻿using ProjetoPokemon.Entities;
+using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon
 {
@@ -19,10 +11,14 @@ namespace ProjetoPokemon
             List<Move> movesList = new List<Move>();
             DataBaseControl.DataBase(pokemons, movesList);
 
-            foreach (var p in pokemons)
-            {
-                Console.WriteLine(p);
-            }
+            Console.Write("Escolha o ID do pokemon atacante: "); int pokemonA = int.Parse(Console.ReadLine());
+            var pokeDisplay = pokemons.Where(x => x.NumberID == pokemonA).Select(p => p.Name).First();
+            Console.WriteLine(pokeDisplay + " selecionado!");
+            Console.Write("Escolha o ID do pokemon defensor: "); int pokemonB = int.Parse(Console.ReadLine());
+            pokeDisplay = pokemons.Where(x => x.NumberID == pokemonB).Select(p => p.Name).First();
+            Console.WriteLine(pokeDisplay + " selecionado!");
+            BattleSimService.Simulate(pokemons, pokemonA, pokemonB);
+
         }
     }
 }

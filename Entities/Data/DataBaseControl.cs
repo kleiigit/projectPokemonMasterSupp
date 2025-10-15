@@ -1,42 +1,54 @@
-﻿using ClosedXML.Excel;
+﻿using System.Reflection;
+using ClosedXML.Excel;
+using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace ProjetoPokemon.Entities.Data
+namespace ProjetoPokemon
 {
-    internal static class DataBaseControl
+    internal static class DataBaseControl //Faz o controle dos arquivos xlsx
     {
-        static string pathData = "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Data\\";
+        private static readonly string pathData;
+        private static readonly string movesPath;
+        private static readonly string pokemonPath;
+
+        // Bloco estático executado apenas uma vez quando a classe é usada
+        static DataBaseControl()
+        {
+            string exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            string relativePath = Path.Combine(exeDirectory, @"..\..\..\Entities\Data");
+            pathData = Path.GetFullPath(relativePath);
+
+            movesPath = Path.Combine(pathData, "MovesPokemon.xlsx");
+            pokemonPath = Path.Combine(pathData, "Pokemon.xlsx");
+        }
 
         public static void DataBase(List<Pokemon> pokemons, List<Move> movesList)
         {
             // --- CARREGA MOVES ---
-            using (var workbook = new XLWorkbook(pathData + "MovesPokemon.xlsx"))
+            using (var workbook = new XLWorkbook(movesPath))
             {
                 var worksheet = workbook.Worksheet(1);
                 var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
 
                 foreach (var row in rows)
                 {
-                    // - ID e Nomes
                     int moveID = row.Cell(1).GetValue<int>();
                     string moveNameEng = row.Cell(2).GetString();
                     string moveNamePtBr = row.Cell(8).GetString();
                     string moveNameEsp = row.Cell(9).GetString();
                     string moveNameJp = row.Cell(10).GetString();
 
-                    // - Poder, Tipo e Dado
                     int power = row.Cell(3).GetValue<int>();
-                    string diceSides = row.Cell(5).GetString();
+              
+                    int diceSides = 0;
+                    if (!string.IsNullOrEmpty(row.Cell(5).GetString()) && int.TryParse(row.Cell(5).GetString(), out int resultdice))
+                        diceSides = resultdice;
 
                     string typeStr = row.Cell(4).GetString();
                     typeStr = char.ToUpper(typeStr[0]) + typeStr.Substring(1).ToLower();
                     TypePokemon type = Enum.Parse<TypePokemon>(typeStr);
 
-                    // - Efeitos
-                    List<EffectMove> effectMoves = new List<EffectMove>();
+                    List<EffectMove> effectMoves = new();
                     int efRoll = 0;
                     if (!string.IsNullOrEmpty(row.Cell(7).GetString()) && int.TryParse(row.Cell(7).GetString(), out int result))
                         efRoll = result;
@@ -45,11 +57,9 @@ namespace ProjetoPokemon.Entities.Data
                     if (!string.IsNullOrEmpty(effectMove))
                     {
                         string[] effectVet = effectMove.Split(';');
-
-                        for (int i = 0; i < effectVet.Length; i++)
+                        foreach (string effect in effectVet)
                         {
-                            string[] parts = effectVet[i].Split('.');
-
+                            string[] parts = effect.Split('.');
                             if (parts.Length < 2)
                             {
                                 effectMoves.Add(new EffectMove(parts[0]));
@@ -58,19 +68,28 @@ namespace ProjetoPokemon.Entities.Data
 
                             char targetEffect = char.Parse(parts[0].Trim());
                             string effectSetup = parts[1].Trim();
-
                             effectMoves.Add(new EffectMove(targetEffect, effectSetup));
                         }
                     }
 
-                    // ✅ Move SEMPRE é criado, mesmo sem efeitos
                     Move move = new Move(moveID, type, moveNameEng, power, effectMoves, diceSides, efRoll);
-                    movesList.Add(move);
+
+                    // Exceptions ERRO
+                    if (!movesList.Any(p => p.MoveID == move.MoveID))
+                    {
+                        movesList.Add(move);
+                    }
+                    else
+                    {
+                        Console.WriteLine(move.Name + " possui erro em seu ID! \n");
+                    }
+                    
+                    
                 }
             }
 
             // --- CARREGA POKÉMON ---
-            using (var workbook = new XLWorkbook(pathData + "Pokemon.xlsx"))
+            using (var workbook = new XLWorkbook(pokemonPath))
             {
                 var worksheet = workbook.Worksheet(1);
                 var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
@@ -99,8 +118,7 @@ namespace ProjetoPokemon.Entities.Data
                     bool shiny = false;
                     string? form = string.IsNullOrEmpty(row.Cell(16).GetString()) ? null : row.Cell(16).GetString();
 
-                    // - Movimentos
-                    List<Move> pokeMoves = new List<Move>();
+                    List<Move> pokeMoves = new();
                     string moveString = row.Cell(13).GetString();
                     string[] moveVet = moveString.Split(';');
 
@@ -114,11 +132,20 @@ namespace ProjetoPokemon.Entities.Data
                         }
                     }
 
-                    Pokemon pokemon = new Pokemon(numberID, name, type, stabType, stage, toEvolveID, form,
+                    Pokemon pokemon = new Pokemon(
+                        numberID, name, type, stabType, stage, toEvolveID, form,
                         levelBase, expToEvolve, generation,
                         color, background, new List<Ability>(), shiny, pokeMoves);
 
-                    pokemons.Add(pokemon);
+                    // Exceptions ERRO
+                    if (!pokemons.Any(p => p.NumberID == pokemon.NumberID))
+                    {
+                        pokemons.Add(pokemon);
+                    }
+                    else
+                    {
+                        Console.WriteLine(pokemon.Name + " possui erro em seu ID! \n");
+                    }
                 }
             }
         }
