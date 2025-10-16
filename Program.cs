@@ -1,4 +1,5 @@
-﻿using ProjetoPokemon.Entities;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon
@@ -11,13 +12,12 @@ namespace ProjetoPokemon
             List<Move> movesList = new List<Move>();
             DataBaseControl.DataBase(pokemons, movesList);
 
-            Console.Write("Escolha o ID do pokemon atacante: "); int pokemonA = int.Parse(Console.ReadLine());
-            var pokeDisplay = pokemons.Where(x => x.NumberID == pokemonA).Select(p => p.Name).First();
-            Console.WriteLine(pokeDisplay + " selecionado!");
-            Console.Write("Escolha o ID do pokemon defensor: "); int pokemonB = int.Parse(Console.ReadLine());
-            pokeDisplay = pokemons.Where(x => x.NumberID == pokemonB).Select(p => p.Name).First();
-            Console.WriteLine(pokeDisplay + " selecionado!");
-            BattleSimService.Simulate(pokemons, pokemonA, pokemonB);
+            int index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.Name).ToList(), "Escolha o Pokémon atacante");
+            Pokemon pokemonAttacker = pokemons[index];
+            index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.Name).ToList(), "Escolha o Pokémon defensor");
+            Pokemon pokemonDefender = pokemons[index];
+
+            BattleSimService.BattleControl(pokemonAttacker, pokemonDefender);
 
         }
     }

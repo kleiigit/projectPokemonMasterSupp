@@ -80,24 +80,10 @@ namespace ProjetoPokemon.Entities
         {
             if (Moves == null || Moves.Count == 0)
                 return null;
+            int moveIndex = ConsoleMenu.ShowMenu(Moves.Select(m => m.Name).ToList(), "Escolha o ataque de " + Name);
+            Move moveSelected = Moves[moveIndex];
 
-            Console.WriteLine("\nSelect a move of " + Name);
-            for (int i = 0; i < Moves.Count; i++)
-            {
-                Console.WriteLine($"{i}: {Moves[i]}");
-            }
-
-            // Solicita escolha do usuário
-            Console.Write("Digite o índice do item desejado: ");
-            if (int.TryParse(Console.ReadLine(), out int index) && index >= 0 && index < Moves.Count)
-            {
-                Move selected = Moves[index];
-                Console.WriteLine($"Você escolheu: {selected.Name}");
-                return selected;
-            }
-
-            Console.WriteLine("Índice inválido. Operação cancelada.");
-            return default!;
+            return moveSelected;
         }
         
 

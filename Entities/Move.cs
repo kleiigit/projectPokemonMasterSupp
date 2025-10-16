@@ -30,8 +30,6 @@ namespace ProjetoPokemon.Entities
             DiceSides = DiceSidesMove(diceSides);
             EffectRoll = efRoll;
         }
-
-
         public static int DiceSidesMove(int diceSides)
         {
             if (diceSides == 0)

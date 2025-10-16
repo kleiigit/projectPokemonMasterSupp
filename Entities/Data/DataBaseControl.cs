@@ -62,12 +62,12 @@ namespace ProjetoPokemon
                             string[] parts = effect.Split('.');
                             if (parts.Length < 2)
                             {
-                                effectMoves.Add(new EffectMove(parts[0]));
+                                effectMoves.Add(new EffectMove(Enum.Parse <EffectType>(parts[0])));
                                 continue;
                             }
 
                             char targetEffect = char.Parse(parts[0].Trim());
-                            string effectSetup = parts[1].Trim();
+                            EffectType effectSetup = Enum.Parse<EffectType>(parts[1].Trim());
                             effectMoves.Add(new EffectMove(targetEffect, effectSetup));
                         }
                     }
