@@ -46,8 +46,7 @@
               "RelativeToolTip": "Entities\\Enums\\EffectType.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T20:23:57.785Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-16T20:23:57.785Z"
             },
             {
               "$type": "Document",
@@ -59,8 +58,7 @@
               "RelativeToolTip": "Entities\\EffectMove.cs",
               "ViewState": "AgIAACcAAAAAAAAAAAAmwDcAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-16T20:19:26.551Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-16T20:19:26.551Z"
             },
             {
               "$type": "Document",
@@ -70,7 +68,7 @@
               "RelativeDocumentMoniker": "Entities\\Services\\BattleSimService.cs",
               "ToolTip": "C:\\Users\\kleil\\OneDrive\\Documentos\\ProjetosC\\ProjetoPokemon\\Entities\\Services\\BattleSimService.cs",
               "RelativeToolTip": "Entities\\Services\\BattleSimService.cs",
-              "ViewState": "AgIAAFMAAAAAAAAAAAAqwGIAAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAqwGIAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-14T12:42:13.538Z",
               "EditorCaption": ""
@@ -85,8 +83,7 @@
               "RelativeToolTip": "Entities\\Move.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAA9wCgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:39:51.249Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:39:51.249Z"
             },
             {
               "$type": "Document",
@@ -98,8 +95,7 @@
               "RelativeToolTip": "Entities\\Pokemon.cs",
               "ViewState": "AgIAADoAAAAAAAAAAAAmwFMAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-18T14:08:42.896Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-18T14:08:42.896Z"
             },
             {
               "$type": "Document",
@@ -111,8 +107,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T04:34:58.759Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T04:34:58.759Z"
             }
           ]
         }
