@@ -1,5 +1,4 @@
-﻿
-using ProjetoPokemon.Entities.Enums;
+﻿using ProjetoPokemon.Entities.Enums;
 
 namespace ProjetoPokemon.Entities
 {
@@ -11,10 +10,6 @@ namespace ProjetoPokemon.Entities
 
         public EffectMove(char targetEffect, EffectType effectName)
         {
-            string targetColor = "Alvo";
-            if (targetEffect == 'B') targetColor = "the Opponent";
-            else targetColor = "himself"; 
-
             TargetEffect = targetEffect;
             EffectType = effectName;
             DescriptionEffect = EffectDescription();
@@ -28,50 +23,60 @@ namespace ProjetoPokemon.Entities
 
         private string EffectDescription()
         {
-            string description = "";
-            switch (EffectType)
+            string description = TargetEffect == 'W' ? "This Pokemon" : "The opponent Pokémon";
+            switch(EffectType)
             {
                 case EffectType.POISON:
-                    description = "Poison " + TargetEffect;
-                    break;
-                case EffectType.BURN:
-                    description = "Burn " + TargetEffect;
+                    description += " can be poisoned.";
                     break;
                 case EffectType.PARALYZE:
-                    description = "Paralyze " + TargetEffect;
+                    description += " can be paralyzed.";
                     break;
                 case EffectType.SLEEP:
-                    description = "Put to Sleep " + TargetEffect;
+                    description += " can be put to sleep.";
+                    break;
+                case EffectType.BURN:
+                    description += " can be burned.";
                     break;
                 case EffectType.FREEZE:
-                    description = "Freeze " + TargetEffect;
+                    description += "  can be frozen.";
                     break;
                 case EffectType.CONFUSION:
-                    description = "Confuse " + TargetEffect;
+                    description += " may get confused.";
                     break;
 
-                case EffectType.TWODICES:
-                    description = TargetEffect + " roll two dices";
-                    //if (TargetEffect == "himself") description += " and choose the highest result";
-                    // else description += " and choose the worst result";
-                    break;
 
                 case EffectType.RECHARGE:
-                    description = "this move needs to recharge";
+                    description = "This move can only be used once per battle.";
                     break;
                 case EffectType.KO:
-                    description = "this move can cause instant KO in user";
+                    description += " can be knocked out.";
                     break;
-                case EffectType.RAIN:
-                    description = "Put Rain Card in battlefield";
+                case EffectType.FIRST:
+                    description += " ignores the effects of the opponent's Pokémon's move.";
+                    break;
+                case EffectType.HALFLEVEL:
+                    description = "The power of this attack is equal to half of the";
+                    description += TargetEffect == 'W' ? " this Pokémon's level." : " opponent's Pokémon's level.";
+                    break ;
+                case EffectType.PRECISION:
+                    description = "If the roll is less than 3, it becomes 3.";
+                    break;
+
+
+                case EffectType.TWODICES:
+                    description += " can use two dice and choose the";
+                    description += TargetEffect == 'W' ? " best result." : " worst result.";
+                    break;
+                case EffectType.SOMADICES:
+                    description += " can add the attack dice roll.";
                     break;
 
 
                 default:
-                    description = "No description available.";
-                    break;
+                    description = "Effect Description.";
+                    return description;
             }
-
             return description;
         }
 

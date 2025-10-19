@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using ProjetoPokemon.Entities;
+﻿using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon
@@ -10,14 +9,16 @@ namespace ProjetoPokemon
         {
             List<Pokemon> pokemons = new List<Pokemon>();
             List<Move> movesList = new List<Move>();
-            DataBaseControl.DataBase(pokemons, movesList);
+            List<BoxPokemon> profiles = new List<BoxPokemon>();
+            List<ItemCard> itemCards = new List<ItemCard>();
 
-            int index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.Name).ToList(), "Escolha o Pokémon atacante");
-            Pokemon pokemonAttacker = pokemons[index];
-            index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.Name).ToList(), "Escolha o Pokémon defensor");
-            Pokemon pokemonDefender = pokemons[index];
+            DataBaseControl.DataBase(pokemons, movesList, itemCards, profiles);
+            Console.ReadLine();
+            int index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Escolha o perfil de Treinador");
+            BoxPokemon profile = profiles[index];
+            Console.WriteLine(profile);
 
-            BattleSimService.BattleControl(pokemonAttacker, pokemonDefender);
+            BattleSimService.SelectPokemon(profile.ListBox);
 
         }
     }

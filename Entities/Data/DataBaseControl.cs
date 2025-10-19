@@ -1,7 +1,8 @@
-﻿using System.Reflection;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Enums;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace ProjetoPokemon
 {
@@ -10,6 +11,8 @@ namespace ProjetoPokemon
         private static readonly string pathData;
         private static readonly string movesPath;
         private static readonly string pokemonPath;
+        private static readonly string trainerPath;
+        private static readonly string itemCardPath;
 
         // Bloco estático executado apenas uma vez quando a classe é usada
         static DataBaseControl()
@@ -20,9 +23,11 @@ namespace ProjetoPokemon
 
             movesPath = Path.Combine(pathData, "MovesPokemon.xlsx");
             pokemonPath = Path.Combine(pathData, "Pokemon.xlsx");
+            trainerPath = Path.Combine(pathData, "ProfileTrainer.txt");
+            itemCardPath = Path.Combine(pathData, "ItemCard.xlsx");
         }
 
-        public static void DataBase(List<Pokemon> pokemons, List<Move> movesList)
+        public static void DataBase(List<Pokemon> pokemons, List<Move> movesList, List<ItemCard> cardList, List<BoxPokemon> profiles)
         {
             // --- CARREGA MOVES ---
             using (var workbook = new XLWorkbook(movesPath))
@@ -147,6 +152,55 @@ namespace ProjetoPokemon
                         Console.WriteLine(pokemon.Name + " possui erro em seu ID! \n");
                     }
                 }
+            }
+
+            // --- CARREGA ITEM ---
+            using (var workbook = new XLWorkbook(itemCardPath))
+            {
+                var worksheet = workbook.Worksheet(1);
+                var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
+
+                foreach (var row in rows)
+                {
+                    int numberID = row.Cell(1).GetValue<int>();
+                    string name = row.Cell(2).GetString();
+                    string description = row.Cell(4).GetString();
+
+                    string typeStr = row.Cell(3).GetString();
+                    typeStr = char.ToUpper(typeStr[0]) + typeStr.Substring(1).ToLower();
+                    TypeItemCard type = Enum.Parse<TypeItemCard>(typeStr);
+
+                    ItemCard itemCard = new ItemCard(
+                        numberID, name, type, description);
+
+                    // Exceptions ERRO
+                    if (!cardList.Any(p => p.Id == itemCard.Id))
+                    {
+                        cardList.Add(itemCard);
+                    }
+                    else
+                    {
+                        Console.WriteLine(itemCard.Name + " possui erro em seu ID! \n");
+                    }
+                }
+            }
+
+            if (!File.Exists(trainerPath))
+            {
+                Console.WriteLine("Arquivo não encontrado!");
+                return;
+            }
+
+            // Lê todo o conteúdo do arquivo
+            string fileContent = File.ReadAllText(trainerPath);
+
+            // Separa cada profile por "};" (fim do bloco)
+            string[] profileBlocks = Regex.Split(fileContent, @"};");
+
+            foreach (var block in profileBlocks)
+            {
+                if (string.IsNullOrWhiteSpace(block)) continue;
+                profiles.Add(BoxPokemon.FromText(block, pokemons, cardList));
             }
         }
     }
