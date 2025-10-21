@@ -1,5 +1,7 @@
-﻿using ProjetoPokemon.Entities;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Services;
+using System.Xml.Linq;
 
 namespace ProjetoPokemon
 {
@@ -13,12 +15,24 @@ namespace ProjetoPokemon
             List<ItemCard> itemCards = new List<ItemCard>();
 
             DataBaseControl.DataBase(pokemons, movesList, itemCards, profiles);
-            Console.ReadLine();
-            int index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Escolha o perfil de Treinador");
-            BoxPokemon profile = profiles[index];
-            Console.WriteLine(profile);
+            if(ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))
+            {
+                Console.Write("Write a new trainer name: ");
+                string newTrainerName = Console.ReadLine();
+                if(string.IsNullOrEmpty(newTrainerName))
+                    { newTrainerName = "Trainer"; }
+                BoxPokemon newProfile = new BoxPokemon(newTrainerName);
+                newProfile.CreateBox(pokemons);
+                profiles.Add(newProfile);
+            }
+            int index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Choose a Attacker trainer Profile");
+            BoxPokemon profileAtk = profiles[index];
 
-            BattleSimService.SelectPokemon(profile.ListBox);
+            index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Choose a Defender trainer Profile");
+            BoxPokemon profileDef = profiles[index];
+            Console.WriteLine($"{profileAtk}\n\n{profileDef}");
+            BattleSimService.SelectPokemon(profileAtk, profileDef);
+            DataBaseControl.SaveProfiles(profiles);
 
         }
     }

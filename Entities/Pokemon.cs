@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
-using ProjetoPokemon.Entities.Enums;
+﻿using ProjetoPokemon.Entities.Enums;
 
 namespace ProjetoPokemon.Entities
 {
@@ -84,8 +82,7 @@ namespace ProjetoPokemon.Entities
             foreach (var move in other.Moves)
             {
                 var moveCopy = new Move(move.MoveID, move.Type, move.Name, move.Power, move.Effects, move.DiceSides, move.EffectRoll);
-                if (move.Type == Type || move.Type == StabType)
-                    moveCopy.Power = Move.StabMove(move.Power);
+                //if (move.Type == Type || move.Type == StabType) moveCopy.Power = Move.StabMove(move.Power);
 
                 Moves.Add(moveCopy);
             }
@@ -109,11 +106,11 @@ namespace ProjetoPokemon.Entities
             return Moves[rnd.Next(Moves.Count)];
         }
 
-        public Move SelectMove()
+        public Move SelectMove(string trainer)
         {
             if (Moves == null || Moves.Count == 0)
                 return null;
-            int moveIndex = ConsoleMenu.ShowMenu(Moves.Select(m => m.ToString()).ToList(), "Escolha o ataque de " + ToString());
+            int moveIndex = ConsoleMenu.ShowMenu(Moves.Select(m => m.ToString()).ToList(), $"Choose a {trainer}'s {Name} | " + ToString());
             Move moveSelected = Moves[moveIndex];
 
             return moveSelected;

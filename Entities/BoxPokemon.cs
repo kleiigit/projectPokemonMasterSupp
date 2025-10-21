@@ -1,5 +1,6 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using ProjetoPokemon.Entities.Enums;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace ProjetoPokemon.Entities
 {
@@ -9,10 +10,74 @@ namespace ProjetoPokemon.Entities
         public List<ProfilePokemon> ListBox = new List<ProfilePokemon>();
         public Dictionary<ItemCard,int> ListCards = new Dictionary<ItemCard,int>();
 
+        public BoxPokemon(string nickname)
+        {
+            Nickname = nickname;
+        }
+
         public BoxPokemon(string nickname, List<ProfilePokemon> listBox)
         {
             Nickname = nickname;
             ListBox = listBox;
+        }
+        public ItemCard SelectItem(TypeItemCard type)
+        {
+            if (ListCards == null || ListCards.Count == 0)
+                return null;
+
+            // Filtra apenas os itens do tipo desejado
+            var filtered = ListCards
+                .Where(x => x.Key.Type == type)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            if (filtered.Count == 0)
+            {
+                Console.WriteLine($"Nenhum item do tipo {type} encontrado.");
+                return null;
+            }
+
+            // Cria lista de opções (somente visual)
+            var itemList = filtered.Keys.ToList();
+            var options = itemList.Select(k => k.ToString()).ToList();
+            options.Add("Do not use any item card");
+
+            // Exibe o menu
+            int choice = ConsoleMenu.ShowMenu(options, "Choose a Battle Item Card");
+
+            // Se for a última opção, jogador optou por não usar item
+            if (choice == options.Count - 1)
+            {
+                Console.WriteLine("No item card used.");
+                return null;
+            }
+
+            // Obtém carta selecionada
+            ItemCard selected = itemList[choice];
+
+            // Reduz contador ou remove totalmente
+            if (ListCards.ContainsKey(selected))
+            {
+                ListCards[selected]--;
+                if (ListCards[selected] <= 0)
+                    ListCards.Remove(selected);
+            }
+
+            return selected;
+        }
+        public static Pokemon ChoosePokemon(List<Pokemon> List, int[] number)
+        {
+            Pokemon pokemon = ConsoleMenu.ShowMenu(List.Where(p => number.Contains(p.NumberID)).ToDictionary(p => p, p => p.Name), "Choose a initial Pokemon");
+            return pokemon;
+        }
+
+        public void CreateBox(List<Pokemon> allPokemons)
+        {
+                Console.WriteLine($"Choose your initial Pokémon:");
+                var pokemon = ChoosePokemon(allPokemons, new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
+                var initialPokemon = new ProfilePokemon(pokemon, pokemon.Name, 0);
+                initialPokemon.NickName();
+                ListBox.Add(initialPokemon);
+                Console.WriteLine($"{initialPokemon.Name} added to your box!\n");
         }
 
         public static BoxPokemon FromText(string text, List<Pokemon> allPokemons, List<ItemCard> allItems)
@@ -107,7 +172,31 @@ namespace ProjetoPokemon.Entities
             box.ListCards = items;
             return box;
         }
+        public string SaveProfile()
+        {
+            string nl = Environment.NewLine; // quebra de linha correta para o SO
+            string result = $"profile = {Nickname};{nl}";
 
+            // Bloco de Pokémons
+            result += "pokemon {" + nl;
+            foreach (var p in ListBox)
+            {
+                int cardID = p.AttachCard?.Id ?? 0;
+                string pName = string.IsNullOrWhiteSpace(p.Name) ? "" : p.Name;
+                result += $"{p.Pokemon.NumberID} = {p.Level} \"{pName}\", {cardID},{nl}";
+            }
+            result += "}" + nl;
+
+            // Bloco de Itens
+            result += "item {" + nl;
+            foreach (var kvp in ListCards)
+            {
+                result += $"{kvp.Key.Id} = {kvp.Value},{nl}";
+            }
+            result += "};" + nl;
+
+            return result;
+        }
         public override string ToString()
         {
             string description = "Pokemon: \n";
@@ -124,6 +213,7 @@ namespace ProjetoPokemon.Entities
             foreach(var item in ListCards)
             {
                 description += item.ToString();
+                description += "\n";
             }
 
             return Nickname + "\n" + description;

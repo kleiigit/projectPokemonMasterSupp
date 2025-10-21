@@ -7,5 +7,6 @@ namespace ProjetoPokemon.Entities.Enums
         TWODICES, SOMADICES,
         RECHARGE, KO, ESPECIAL, FIRST, CHANGE, HALFLEVEL, PRECISION,
         RAIN,
+        ADDROLL, ADDPOWER,
     }
 }

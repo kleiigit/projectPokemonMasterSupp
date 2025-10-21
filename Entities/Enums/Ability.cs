@@ -8,6 +8,7 @@ namespace ProjetoPokemon.Entities.Enums
 {
     enum Ability
     {
+        None,
         Surf,
         Fly,
         Teleport

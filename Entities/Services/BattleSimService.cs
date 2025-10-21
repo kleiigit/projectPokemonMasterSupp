@@ -1,155 +1,200 @@
-﻿using AuxiliarCampanha.Entities.Services;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using ProjetoPokemon.Entities.Enums;
+﻿using ProjetoPokemon.Entities.Enums;
 using ProjetoPokemon.Services;
-using System.Linq;
 
 namespace ProjetoPokemon.Entities.Services
 {
     static class BattleSimService // classe que controla as simulações de combate
     {
+        private static string battleLog = "";
+        private static Move nullMove = new Move(0, TypePokemon.None, "No Move", 0, 6);
         private static int attackerDicesRoll = 0;
         private static int defenderDicesRoll = 0;
-        private static ProfilePokemon pokemonAttacker;
-        private static ProfilePokemon pokemonDefender;
-        
+        private static ProfilePokemon pokemonAtk;
+        private static ProfilePokemon pokemonDef;
 
-        public static void SelectPokemon(List<ProfilePokemon> pokemons)
+        public static void SelectPokemon(BoxPokemon profileAttacker, BoxPokemon profileDefender)
         {
-            int index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.ToString()).ToList(), "Escolha o Pokémon atacante");
-            pokemonAttacker = pokemons[index];
-            index = ConsoleMenu.ShowMenu(pokemons.Select(m => m.ToString()).ToList(), "Escolha o Pokémon defensor");
-            pokemonDefender = pokemons[index];
+            // Choose Pokemon
+            int index = ConsoleMenu.ShowMenu(profileAttacker.ListBox.Select(m => m.ToString()).ToList(), $"Choose {profileAttacker.Nickname}'s Attacking Pokémon");
+            ProfilePokemon pokemonAttacker = profileAttacker.ListBox[index];
+            BattleModifications profileAtk = new BattleModifications(profileAttacker, SetupBattle.Attacker, pokemonAttacker);
 
-            BattleControl();
+            index = ConsoleMenu.ShowMenu(profileDefender.ListBox.Select(m => m.ToString()).ToList(), $"Choose {profileDefender.Nickname}'s Defending Pokémon");
+            ProfilePokemon pokemonDefender = profileDefender.ListBox[index];
+            BattleModifications profileDef = new BattleModifications(profileDefender, SetupBattle.Defender, pokemonDefender);
+
+
+            BattleControl(profileAtk, profileDef);
         }
-        public static void BattleControl()
+        public static void BattleControl(BattleModifications attacker, BattleModifications defender)
         {
-            int totalAttacker = 0;
-            int totalDefender = 0;
+            pokemonAtk = attacker.Pokemon;
+            pokemonDef = defender.Pokemon;
 
-            Move attackerMove = new Move(0, TypePokemon.None, "Sem ataque", 0, 6);
-            Move defenderMove = new Move(0, TypePokemon.None, "Sem ataque", 0, 6);
+            //pokemonAtk.Conditions = StatusConditions.BURNED;
+            //pokemonDef.Conditions = StatusConditions.CONFUSED;
 
-            if (MoveStatusCheck(pokemonAttacker))
+            if (MoveStatusCheck(pokemonAtk))
             {
-                attackerMove = pokemonAttacker.Pokemon.SelectMove();
+                attacker.UsedMove = pokemonAtk.Pokemon.SelectMove(attacker.ToString());
+                battleLog += $"{attacker} used {attacker.UsedMove.Name}.\n";
             }
 
-            if (MoveStatusCheck(pokemonDefender))
+            if (MoveStatusCheck(pokemonDef))
             {
-                defenderMove = pokemonDefender.Pokemon.SelectMove();
+                defender.UsedMove = pokemonDef.Pokemon.SelectMove(defender.ToString());
+                battleLog += $"{defender} used {defender.UsedMove.Name}.\n";
             }
-            
+            battleLog += "\n";
 
-            // Efeitos de cartas deveriam ser colocados aqui.
+            attacker.UsedCard = attacker.TrainerBox.SelectItem(TypeItemCard.Battle);
+            defender.UsedCard = defender.TrainerBox.SelectItem(TypeItemCard.Battle);
 
-            EffectMove(attackerMove, true);
-            EffectMove(defenderMove, false);
-            // Effeito do move é ativado aqui
-
-            CheckStats(pokemonAttacker, attackerMove);
-            CheckStats(pokemonDefender, defenderMove);
-
-            while(totalDefender == totalAttacker)
+            if (attacker.UsedCard != null)
             {
+                battleLog += $"{attacker.TrainerName} used the item card {attacker.UsedCard.Name}!\n";
+                CardEffectBattle(attacker.UsedCard.BattleCard(), attacker);
+
+            }
+            if (defender.UsedCard != null)
+            {
+                battleLog += $"{defender.TrainerName} used the item card {defender.UsedCard.Name}!\n";
+                CardEffectBattle(defender.UsedCard.BattleCard(), defender);
+
+            }
+            battleLog += "\n";
+
+            EffectMove(attacker, true);
+            EffectMove(defender, false);
+
+            do
+            {
+                attacker.NumberDices = attackerDicesRoll;
+                defender.NumberDices = defenderDicesRoll;
+                // roll
+                attacker.Roll = RollCombatDices(attacker.UsedMove, attacker.NumberDices);
+                defender.Roll = RollCombatDices(defender.UsedMove, defender.NumberDices);
+                battleLog += "\n";
+
+                // bonus status
+                attacker.StatusBonus = CheckStats(pokemonAtk, attacker.UsedMove, attacker.Roll, out int confusionModA);
+                defender.StatusBonus = CheckStats(pokemonDef, defender.UsedMove, defender.Roll, out int confusionModB);
+                battleLog += "\n";
+
+                if (attacker.Pokemon.CanAttack == false) attacker.UsedMove = nullMove;
+                if (defender.Pokemon.CanAttack == false) defender.UsedMove = nullMove;
+
+                // effective bonus
+                attacker.EffectiveBonus = EffectiveTypeService.GetTypeModifier(attacker.UsedMove.Type, pokemonDef.Pokemon.Type);
+                defender.EffectiveBonus = EffectiveTypeService.GetTypeModifier(defender.UsedMove.Type, pokemonAtk.Pokemon.Type);
                 
-                int rollA = RollCombatDices(attackerMove, attackerDicesRoll);
-                int effvA = EffectiveTypeService.GetTypeModifier(attackerMove.Type, pokemonDefender.Pokemon.Type);
-                int rollB = RollCombatDices(defenderMove, defenderDicesRoll);
-                int effvB = EffectiveTypeService.GetTypeModifier(defenderMove.Type, pokemonAttacker.Pokemon.Type);
-                string statusDisplayAtk = pokemonAttacker.Name;
-                string statusDisplayDef = pokemonDefender.Name;
-                if (pokemonAttacker.Conditions != StatusConditions.NORMAL)
-                {
-                    statusDisplayAtk = pokemonAttacker.Name + $" ({pokemonAttacker.Conditions})";
-                }
+                // confusion bonus
+                attacker.StatusBonus += confusionModB;
+                defender.StatusBonus += confusionModA;
 
-                totalAttacker = (rollA + effvA) + attackerMove.Power + pokemonAttacker.LevelPokemon(); // falta outros modificadores
+                attacker.CalculateTotalPower();
+                defender.CalculateTotalPower();
                 Console.WriteLine();
-                Console.WriteLine($"{statusDisplayAtk} usou {attackerMove.Name} com total de " + totalAttacker);
-                Console.WriteLine($"lv: {pokemonAttacker.LevelPokemon()}, roll ({rollA}/{effvA}), power: {attackerMove.Power}");
 
-                totalDefender = (rollB + effvB) + defenderMove.Power + pokemonDefender.LevelPokemon(); // falta outros modificadores
-                Console.WriteLine($"{statusDisplayDef} usou {defenderMove.Name} com total de " + totalDefender);
-                Console.WriteLine($"lv: {pokemonDefender.LevelPokemon()}, roll ({rollB}/{effvB}), power: {defenderMove.Power}");
+                // battle log
+                battleLog += attacker.DisplayBattleStatus();
+                battleLog += "\n";
+                battleLog += defender.DisplayBattleStatus();
+                Console.WriteLine(battleLog);
 
-                if (totalAttacker == totalDefender)
+                if (attacker.TotalResult == defender.TotalResult)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Empate! Role novamente os dados.\n");
+                    Console.WriteLine("Tie! Roll the dice again.\n");
                     Console.ResetColor();
                     Console.ReadLine();
                 }
-                else
-                {
-                    string victoryPokemon = totalAttacker > totalDefender ? "Atacante " + pokemonAttacker.Name : "Defensor " + pokemonAttacker.Name;
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(victoryPokemon + " venceu a batalha!");
-                    Console.ResetColor();
-                }
-            }
-            
 
+            } while (attacker.TotalResult == defender.TotalResult);
+
+            string victoryPokemon = attacker.TotalResult > defender.TotalResult ? attacker.ToString() : defender.ToString();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(victoryPokemon + " won the battle!");
+            if (attacker.TotalResult > defender.TotalResult && pokemonAtk.LevelPokemon() <= pokemonDef.LevelPokemon()) pokemonAtk.LevelUp();
+            else if (attacker.TotalResult < defender.TotalResult && pokemonDef.LevelPokemon() <= pokemonAtk.LevelPokemon()) pokemonDef.LevelUp();
+            Console.ResetColor();
+            battleLog = "";
         }
+
         private static bool MoveStatusCheck(ProfilePokemon pokemon)
         {
             if (pokemon.Conditions == StatusConditions.PARALYZED)
             {
                 if (!BattleConditions.ParalyzedRoll())
                 {
+                    battleLog += pokemon.Name + " está paralisado e não pode atacar!\n";
                     return false;
                 }
             }
             else if (pokemon.Conditions == StatusConditions.SLEEP)
             {
                 pokemon.ConditionCount--;
-                if (pokemon.ConditionCount == 0) { Console.WriteLine(pokemon.Name + " acordou!"); pokemon.Conditions = StatusConditions.NORMAL; return true; }
-                else return false;
+                if (pokemon.ConditionCount == 0) { battleLog += pokemon.Name + " acordou!\n"; pokemon.Conditions = StatusConditions.NORMAL; return true; }
+                else
+                {
+                    battleLog += pokemon.Name + " continua dormindo...\n";
+                    return false;
+                }
             }
             else if (pokemon.Conditions == StatusConditions.FROZEN)
             {
-                if (!BattleConditions.FrozenRoll())
+                if (BattleConditions.FrozenRoll())
                 {
                     pokemon.Conditions = StatusConditions.NORMAL;
-                    Console.WriteLine(pokemon.Name + " saiu do congelamento!");
+                    battleLog += pokemon.Name + " descongelou e pode atacar!\n";
                     return true;
                 }
-                else return false;
+                else battleLog += pokemon.Name + " continua congelado.\n"; return false;
             }
             return true;
         }
-        private static void CheckStats(ProfilePokemon pokemon, Move move)
+        private static int CheckStats(ProfilePokemon pokemon, Move move, int roll, out int rollConfusion)
         {
+            rollConfusion = 0;
             if (pokemon.Conditions != StatusConditions.NORMAL)
             {
                 StatusConditions status = pokemon.Conditions;
                 string messageSts = pokemon.Name + " está ";
-                bool attack = true;
+
                 switch (status)
                 {
                     case StatusConditions.PARALYZED:
-                            Console.WriteLine("paralizado!");
-                            attack = false;
+                        battleLog += messageSts + "paralisado!\n";
                         break;
                     case StatusConditions.FROZEN:
-                        Console.WriteLine("congelado!");
-                        attack = false;
+                        battleLog += messageSts + "congelado!\n";
+
                         break;
                     case StatusConditions.BURNED:
-                        Console.WriteLine("queimado!");
-                        move.Power = move.Power > 0 ? move.Power-- : 0;
-                        break;
+                        battleLog += messageSts + "queimado!\n";
+                        return move.Power > 0 ? -1 : 0;
+
                     case StatusConditions.SLEEP:
-                        Console.WriteLine("dormindo!");
-                        attack = false;
+                        battleLog += messageSts + "dormindo!\n";
+                        if (pokemon.ConditionCount > 0)
+                        {
+                            battleLog += pokemon.Name + " está dormindo e não pode atacar!\n";
+                            return 0;
+                        }
+                        break;
+                    case StatusConditions.CONFUSED:
+                        battleLog += messageSts + "confuso!\n";
+                        if (roll % 2 != 0)
+                        {
+                            battleLog += pokemon.Name + " está confuso e se machucou!\n";
+                            rollConfusion = roll;
+                        }
                         break;
                 }
-                if(!attack)
-                {
-                    move = new Move(0, TypePokemon.None, "Sem ataque", 0, 6);
-                }
+                
             }
+            return 0;
         }
         private static int RollCombatDices(Move move, int moveDicesRoll)
         {
@@ -169,7 +214,7 @@ namespace ProjetoPokemon.Entities.Services
                 else if (roll == 8) roll = 6;
 
                 rolls[i] = roll;
-                Console.WriteLine($"{move.Name} - Rolagem {i + 1}: {roll}");
+                battleLog += $"{move.Name} - Roll {i + 1}: {roll}\n";
             }
 
             int result;
@@ -178,7 +223,6 @@ namespace ProjetoPokemon.Entities.Services
             else if (moveDicesRoll > 0)
                 if (move.Effects.Any(p => p.EffectType == EffectType.SOMADICES))
                 {
-                    Console.WriteLine("soma");
                     return rolls.Sum();
                 }
                 else result = rolls.Max(); // Vantagem → pega o maior
@@ -187,21 +231,20 @@ namespace ProjetoPokemon.Entities.Services
 
             return result;
         }
-
-        private static void EffectMove(Move userMove, bool isAttacker)
+        private static void EffectMove(BattleModifications user, bool isAttacker) // aplica os efeito dos movimentos
         {
-            if (userMove?.Effects == null || userMove.Effects.Count == 0)
+            if (user.UsedMove?.Effects == null || user.UsedMove.Effects.Count == 0)
                 return;
 
             int redDice = DiceRollService.RollD6();
 
-            if (userMove.EffectRoll > 1)
-                Console.WriteLine($"Efeito de {userMove.Name}: ({redDice}/{userMove.EffectRoll})");
+            if (user.UsedMove.EffectRoll > 1)
+                Console.WriteLine($"{user.ToString()} {user.UsedMove.Name} roll effect: {redDice} - need {user.UsedMove.EffectRoll} to activate.");
 
-            if (redDice < userMove.EffectRoll)
+            if (redDice < user.UsedMove.EffectRoll)
                 return;
             StatusConditions effectCondition = StatusConditions.NORMAL;
-            foreach (var effect in userMove.Effects)
+            foreach (var effect in user.UsedMove.Effects)
             {
                 switch (effect.EffectType)
                 {
@@ -214,7 +257,7 @@ namespace ProjetoPokemon.Entities.Services
                         break;
 
                     case EffectType.HALFLEVEL:
-                        ApplyHalfLevelEffect(effect, userMove, isAttacker);
+                        ApplyHalfLevelEffect(effect, user.UsedMove, isAttacker);
                         break;
 
                     case EffectType.BURN:
@@ -266,7 +309,6 @@ namespace ProjetoPokemon.Entities.Services
                     defenderDicesRoll += 1;
             }
         }
-
         private static void ApplySumDicesEffect(bool isAttacker)
         {
             if (isAttacker)
@@ -282,23 +324,23 @@ namespace ProjetoPokemon.Entities.Services
             int baseLevel = 1;
 
             if (targetIsEnemy)
-                baseLevel = isAttacker ? pokemonDefender.LevelPokemon() : pokemonAttacker.LevelPokemon();
+                baseLevel = isAttacker ? pokemonDef.LevelPokemon() : pokemonAtk.LevelPokemon();
             else
-                baseLevel = isAttacker ? pokemonAttacker.LevelPokemon() : pokemonDefender.LevelPokemon();
+                baseLevel = isAttacker ? pokemonAtk.LevelPokemon() : pokemonDef.LevelPokemon();
 
             userMove.Power = Math.Max(1, (int)Math.Floor(baseLevel / 2.0));
         }
 
-        private static void StatusConditionsTrigger(EffectMove effect, StatusConditions status, bool isAttacker)
+        private static void StatusConditionsTrigger(EffectMove effect, StatusConditions status, bool isAttacker) // quando ganha o status
         {
             bool targetIsEnemy = effect.TargetEffect == 'B';
             ProfilePokemon target;
 
             // Determina o alvo correto
             if (targetIsEnemy)
-                target = isAttacker ? pokemonDefender : pokemonAttacker;
+                target = isAttacker ? pokemonDef : pokemonAtk;
             else // 'W' ou aliado
-                target = isAttacker ? pokemonAttacker : pokemonDefender;
+                target = isAttacker ? pokemonAtk : pokemonDef;
 
             // Aplica a condição apenas se o Pokémon estiver em NORMAL
             if (target.Conditions == StatusConditions.NORMAL)
@@ -306,10 +348,77 @@ namespace ProjetoPokemon.Entities.Services
                 target.Conditions = status;
                 if (status == StatusConditions.SLEEP)
                 {
+                    battleLog += target.Name + " foi colocado para dormir!\n";
                     target.ConditionCount = BattleConditions.SleepRoll();
+                    if (!isAttacker)
+                        pokemonAtk.CanAttack = false;
+                    else
+                        pokemonDef.CanAttack = false;
+
+                    target.ConditionCount--;
+                    if (target.ConditionCount == 0)
+                    {
+                        target.Conditions = StatusConditions.NORMAL;
+                        Console.WriteLine(target.Name + " acordou!");
+                        if (!isAttacker)
+                            pokemonAtk.CanAttack = true;
+                        else
+                            pokemonDef.CanAttack = true;
+                    }
+                }
+
+                else if (status == StatusConditions.PARALYZED)
+                {
+                    battleLog += target.Name + " foi paralisado!\n";
+                    if (!BattleConditions.ParalyzedRoll())
+                    {
+                        battleLog += target.Name + " está paralisado e não pode atacar!\n";
+                        if (isAttacker)
+                            pokemonDef.CanAttack = false;
+                        else
+                            pokemonAtk.CanAttack = false;
+                    }
+                }
+
+                else if (status == StatusConditions.FROZEN)
+                {
+                    battleLog += target.Name + " foi congelado!\n";
+                    if (!BattleConditions.FrozenRoll())
+                    {
+                        battleLog += target.Name + " está congelado e não pode atacar!\n";
+                        if (isAttacker)
+                            pokemonDef.CanAttack = false;
+                        else
+                            pokemonAtk.CanAttack = false;
+                    }
+                    else
+                    {
+                        target.Conditions = StatusConditions.NORMAL;
+                        battleLog += target.Name + " descongelou e pode atacar!\n";
+                        if (isAttacker)
+                            pokemonDef.CanAttack = true;
+                        else
+                            pokemonAtk.CanAttack = true;
+                    }
                 }
             }
         }
 
+        private static void CardEffectBattle(string card, BattleModifications trainer)
+        {
+            string[] cardsEffects = card.Split(';');
+            foreach (string effect in cardsEffects)
+            {
+                string[] effectSplit = effect.Split('.');
+                switch (effectSplit[0])
+                { 
+                    case "roll":
+                        trainer.CardBonus += int.Parse(effectSplit[1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }
