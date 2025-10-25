@@ -20,7 +20,7 @@ namespace ProjetoPokemon.Services
 
             // Fire
             TypeCompare(TypePokemon.Fire, -2,
-                TypePokemon.Dragon, TypePokemon.Water,TypePokemon.Rock, TypePokemon.Rock);
+                TypePokemon.Dragon, TypePokemon.Water,TypePokemon.Fire, TypePokemon.Rock);
             TypeCompare(TypePokemon.Fire, +2,
                 TypePokemon.Ice, TypePokemon.Grass, TypePokemon.Bug, TypePokemon.Steel);
 

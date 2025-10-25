@@ -26,7 +26,6 @@ namespace ProjetoPokemon.Entities
         {
             return Level + Pokemon.LevelBase;
         }
-
         public void NickName()
         {
             string? newName = null;
@@ -37,20 +36,30 @@ namespace ProjetoPokemon.Entities
             }
             Name = string.IsNullOrWhiteSpace(newName) ? Pokemon.Name : newName;
         }
+        public Move SelectMove(BattleModifications trainerA, BattleModifications trainerB)
+        {
+            if (Pokemon.Moves == null || Pokemon.Moves.Count == 0)
+                return null;
+            int moveIndex = ConsoleMenu.ShowMenu(ConsoleColor.Yellow,
+                Pokemon.Moves.Select(m => m.ToString()).ToList(), $"Choose move: {trainerA} Lv.{LevelPokemon()} ({Pokemon.StabString().ToUpper()}-type) VS " +
+                $"{trainerB} Lv.{trainerB.SelectedPokemon.LevelPokemon()} ({trainerB.SelectedPokemon.Pokemon.StabString().ToUpper()}-type)");
+            Move moveSelected = Pokemon.Moves[moveIndex];
 
+            return moveSelected;
+        }
         public void LevelUp()
         {
             if (Level < 6) 
             { 
-                Level++; Console.WriteLine($"{Name} subiu para o nível {LevelPokemon()}!"); 
+                Level++; Console.WriteLine($"{Name} leveled up to {LevelPokemon()}!"); 
             }
-            else Console.WriteLine($"O {Name} já atingiu o nível máximo possível. Nível: {LevelPokemon()}");
+            else Console.WriteLine($"O {Name} has already reached the maximum possible level. Level: {LevelPokemon()}");
 
             // inserir mecanica de evolução aqui no futuro
         }
         public override string ToString()
         {
-            return Name + $" {Pokemon.ToString()} Level: {Level}";
+            return Name + $" Level: {LevelPokemon()} - Info: {Pokemon.ToString()}";
         }
     }
 }

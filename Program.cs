@@ -1,7 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using ProjetoPokemon.Entities;
+﻿using ProjetoPokemon.Entities;
 using ProjetoPokemon.Entities.Services;
-using System.Xml.Linq;
 
 namespace ProjetoPokemon
 {
@@ -15,7 +13,12 @@ namespace ProjetoPokemon
             List<ItemCard> itemCards = new List<ItemCard>();
 
             DataBaseControl.DataBase(pokemons, movesList, itemCards, profiles);
-            if(ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))
+            Console.ReadLine();
+
+            //PokedexService.FilterPokedexByType(pokemons);
+
+            Console.ReadLine();
+            if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))
             {
                 Console.Write("Write a new trainer name: ");
                 string newTrainerName = Console.ReadLine();
@@ -25,13 +28,9 @@ namespace ProjetoPokemon
                 newProfile.CreateBox(pokemons);
                 profiles.Add(newProfile);
             }
-            int index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Choose a Attacker trainer Profile");
-            BoxPokemon profileAtk = profiles[index];
 
-            index = ConsoleMenu.ShowMenu(profiles.Select(m => m.Nickname).ToList(), "Choose a Defender trainer Profile");
-            BoxPokemon profileDef = profiles[index];
-            Console.WriteLine($"{profileAtk}\n\n{profileDef}");
-            BattleSimService.SelectPokemon(profileAtk, profileDef);
+            BattleSimService.BattlePokemonSetup(profiles);
+
             DataBaseControl.SaveProfiles(profiles);
 
         }

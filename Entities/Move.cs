@@ -7,7 +7,7 @@ namespace ProjetoPokemon.Entities
         public int MoveID { get; }
         public TypePokemon Type { get; } // tipo do movimento
         public string Name { get; } // nome do movimento
-        public int Power { get; set; } // poder do movimento
+        public int Power { get; private set; } // poder do movimento
         public List<EffectMove> Effects = new List<EffectMove>(); // efeitos do movimento
         public int DiceSides { get; } // lados do dado do movimento
         public int EffectRoll { get; } // rolagem de efeito
@@ -30,18 +30,11 @@ namespace ProjetoPokemon.Entities
             DiceSides = DiceSidesMove(diceSides);
             EffectRoll = efRoll;
         }
-        public static int DiceSidesMove(int diceSides)
-        {
-            if (diceSides == 0)
-                diceSides = 6;
-            return diceSides;
-        }
 
-        public static int StabMove(int powerM)
-        {
-            if (powerM != 0) powerM += 1;
-            return powerM;
-        }
+        public static int DiceSidesMove(int diceSides) { if (diceSides == 0) diceSides = 6; return diceSides;}
+        public void StabMove() { if (Power != 0 && Power < 4) Power += 1;}
+        public void HalfLevelMove(ref int powerM) { Power = Math.Max(1, (int)Math.Floor(powerM / 2.0)); }
+
         override public string ToString()
         {
             string EffectsDescription = "";
@@ -52,7 +45,12 @@ namespace ProjetoPokemon.Entities
             }
             string moveStr = $"{Name} - {Type} - Power: {Power}";
             if (DiceSides != 6) moveStr += $" (D{DiceSides})";
-            if (Effects.Count > 0) return moveStr + $" | Roll:{ EffectRoll} ({ EffectsDescription})";
+
+            if (Effects.Count > 0)
+            {
+                if (EffectRoll > 0) return moveStr + $" | Effect Roll:{EffectRoll} ({EffectsDescription})";
+                else return moveStr + $" | Effect ({EffectsDescription})";
+            }
             else return moveStr;
         }
        

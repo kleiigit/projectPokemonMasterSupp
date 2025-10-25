@@ -1,12 +1,13 @@
 ﻿using ProjetoPokemon.Entities.Enums;
 using System.Text.RegularExpressions;
 using System.Linq;
+using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon.Entities
 {
     internal class BoxPokemon
     {
-        public string Nickname { get; set; }
+        public string Nickname { get;}
         public List<ProfilePokemon> ListBox = new List<ProfilePokemon>();
         public Dictionary<ItemCard,int> ListCards = new Dictionary<ItemCard,int>();
 
@@ -20,7 +21,7 @@ namespace ProjetoPokemon.Entities
             Nickname = nickname;
             ListBox = listBox;
         }
-        public ItemCard SelectItem(TypeItemCard type)
+        public ItemCard? SelectItem(TypeItemCard type)
         {
             if (ListCards == null || ListCards.Count == 0)
                 return null;
@@ -32,22 +33,21 @@ namespace ProjetoPokemon.Entities
 
             if (filtered.Count == 0)
             {
-                Console.WriteLine($"Nenhum item do tipo {type} encontrado.");
                 return null;
             }
 
             // Cria lista de opções (somente visual)
             var itemList = filtered.Keys.ToList();
             var options = itemList.Select(k => k.ToString()).ToList();
-            options.Add("Do not use any item card");
+            BattleLog.AddLog("Do not use any item card");
 
             // Exibe o menu
-            int choice = ConsoleMenu.ShowMenu(options, "Choose a Battle Item Card");
+            int choice = ConsoleMenu.ShowMenu(ConsoleColor.Blue ,options, $"{Nickname}: Choose a Battle Item Card");
 
             // Se for a última opção, jogador optou por não usar item
             if (choice == options.Count - 1)
             {
-                Console.WriteLine("No item card used.");
+                BattleLog.AddLog("No item card used.");
                 return null;
             }
 
@@ -174,6 +174,7 @@ namespace ProjetoPokemon.Entities
         }
         public string SaveProfile()
         {
+            
             string nl = Environment.NewLine; // quebra de linha correta para o SO
             string result = $"profile = {Nickname};{nl}";
 
@@ -194,7 +195,6 @@ namespace ProjetoPokemon.Entities
                 result += $"{kvp.Key.Id} = {kvp.Value},{nl}";
             }
             result += "};" + nl;
-
             return result;
         }
         public override string ToString()

@@ -1,9 +1,5 @@
 ﻿using ProjetoPokemon.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon.Entities
 {
@@ -17,8 +13,8 @@ namespace ProjetoPokemon.Entities
         public string? TrainerName { get; set; }
         public BoxPokemon TrainerBox { get; set; }
         public SetupBattle Setup { get; set; }
-        public ProfilePokemon Pokemon { get; set; }
-        public Move UsedMove { get; set; } = new Move(0, TypePokemon.None, "Sem ataque", 0, 6);
+        public ProfilePokemon SelectedPokemon { get; set; }
+        public Move UsedMove { get; set; } = new Move(0, TypePokemon.None, "No move", 0, 6);
         public ItemCard? UsedCard { get; set; }
 
         // modifications in battle
@@ -35,44 +31,37 @@ namespace ProjetoPokemon.Entities
             TrainerName = trainerBox.Nickname;
             TrainerBox = trainerBox;
             Setup = setup;
-            Pokemon = pokemon;
+            SelectedPokemon = pokemon;
         }
 
         public void CalculateTotalPower()
         {
-            TotalResult = Roll + EffectiveBonus + UsedMove.Power + Pokemon.LevelPokemon() + StatusBonus + CardBonus;
+            TotalResult = Roll + EffectiveBonus + UsedMove.Power + SelectedPokemon.LevelPokemon() + StatusBonus + CardBonus;
         }
-        public string DisplayBattleStatus()
+        public void DisplayBattleStatus()
         {
-            string battleLog = $"{ToString()} used {UsedMove.Name} with total of {TotalResult}\n";
-            battleLog += $"lv: {Pokemon.LevelPokemon()}, roll: {Roll}";
+            BattleLog.AddLog($"\n{ToString()} used {UsedMove.Name} with total of {TotalResult}.");
+            string logCalculation = $"lv: {SelectedPokemon.LevelPokemon()}, roll: {Roll}";
             if (EffectiveBonus != 0)
             {
-                if (EffectiveBonus > 0)
-                    battleLog += $" (+{EffectiveBonus} super effective)";
-                else
-                    battleLog += $" ({EffectiveBonus} not effective)";
+                if (EffectiveBonus > 0) logCalculation += $" (+{EffectiveBonus} super effective)";
+                else logCalculation += $" ({EffectiveBonus} not effective)";
             }
 
-            battleLog += $", power: {UsedMove.Power}";
-            if (StatusBonus != 0)
-            {
-                battleLog += $", status: {StatusBonus}";
-            }
-            if (CardBonus != 0)
-            {
-                battleLog += $", card: {CardBonus}\n";
-            }
-            else { battleLog += ".\n"; }
-            return battleLog;
+            logCalculation += $", power: {UsedMove.Power}";
+
+            if (StatusBonus != 0) logCalculation += $", status: {StatusBonus}";
+            if (CardBonus != 0) logCalculation += $", card: {CardBonus}";
+
+            BattleLog.AddLog(logCalculation);
         }
 
         public override string ToString()
         {
-            string nickname = Pokemon.Name;
-            if (nickname != Pokemon.Pokemon.Name)
+            string nickname = SelectedPokemon.Name;
+            if (nickname != SelectedPokemon.Pokemon.Name)
             { 
-                nickname += $" ({Pokemon.Pokemon.Name})";
+                nickname += $" ({SelectedPokemon.Pokemon.Name})";
             }
             return $"{TrainerName}'s {nickname}";
         }

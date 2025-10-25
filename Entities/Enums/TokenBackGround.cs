@@ -20,5 +20,9 @@ namespace ProjetoPokemon.Entities.Enums
         Space,
         Meadow,
         Prairie,
+        Safari,
+        Ruins,
+        Night,
+        Snow,
     }
 }

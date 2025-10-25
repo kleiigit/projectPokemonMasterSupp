@@ -6,7 +6,7 @@ namespace ProjetoPokemon
 {
     internal static class ConsoleMenu
     {
-        public static int ShowMenu(List<string> options, string title)
+        public static int ShowMenu(ConsoleColor menuColor, List<string> options, string title)
         {
             int selectedIndex = 0;
             ConsoleKey key;
@@ -14,7 +14,7 @@ namespace ProjetoPokemon
             do
             {
                 Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = menuColor; //definições de cores do menu
                 Console.WriteLine($"=== {title} ===\n");
                 Console.ResetColor();
 
@@ -24,7 +24,7 @@ namespace ProjetoPokemon
                     {
                         Console.BackgroundColor = ConsoleColor.DarkCyan;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.WriteLine($"> {options[i]} <");
+                        Console.WriteLine($"> {options[i]}");
                         Console.ResetColor();
                     }
                     else
@@ -50,7 +50,6 @@ namespace ProjetoPokemon
         {
             if (dictionary == null || dictionary.Count == 0)
             {
-                Console.WriteLine("Nenhum item disponível.");
                 return default;
             }
 
@@ -60,7 +59,7 @@ namespace ProjetoPokemon
             var options = dictionary.Select(kv =>
                 $"{kv.Key.ToString()} x{kv.Value}").ToList();
 
-            int selectedIndex = ShowMenu(options, title);
+            int selectedIndex = ShowMenu(ConsoleColor.Cyan, options, title);
 
             // Retorna a chave (Key) selecionada
             return keys[selectedIndex];
@@ -69,13 +68,13 @@ namespace ProjetoPokemon
         public static bool ShowYesNo(string question)
         {
             var options = new List<string> { "Yes", "No" };
-            int choice = ShowMenu(options, question);
+            int choice = ShowMenu(ConsoleColor.Cyan, options, question);
             return choice == 0; // 0 = Yes, 1 = No
         }
         public static string YesOrNoString(string question)
         {
             var options = new List<string> { "Yes", "No" };
-            int choice = ShowMenu(options, question);
+            int choice = ShowMenu(ConsoleColor.Cyan, options, question);
             return options[choice];
         }
     }

@@ -46,5 +46,16 @@ namespace ProjetoPokemon.Entities.Enums
 
         }
 
+        public static void PoisonRoll(BattleModifications pokemon) // custom poison effect
+        {
+            int damage = DiceRollService.RollD6();
+            Console.WriteLine("Roll to resist the poison (d6 < 6): " + damage);
+            if (damage == 6) { 
+                Console.WriteLine($"{pokemon} was knocked out by poison!"); 
+                pokemon.SelectedPokemon.Conditions = StatusConditions.KNOCKED;
+            }
+            Console.WriteLine();
+        }
+
     }
 }

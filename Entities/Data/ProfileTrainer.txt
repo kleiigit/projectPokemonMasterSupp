@@ -1,40 +1,28 @@
 profile = Ash Ketchum;
 pokemon {
-25 = 5 "Floquinho", 1,
-1 = 4 "Bulbassalto", 1,
+25 = 6 "Floquinho", 1,
+1 = 5 "Bulbassalto", 1,
 4 = 4 "Charmander", 0,
+76 = 1 "Golem", 2,
+109 = 1 "Koffing", 0,
 }
 item {
-1 = 3,
-5 = 1,
-6 = 4,
 };
 
 profile = Brock;
 pokemon {
-4 = 1 "Charmander", 0,
+4 = 6 "Charmander", 0,
+20 = 3 "Raticate", 0,
+68 = 2 "Machop", 0,
+110 = 1 "Weezing", 0,
 }
 item {
-1 = 4,
 };
 
 profile = Misty;
 pokemon {
-7 = 0 "Squirtle", 0,
-}
-item {
-};
-
-profile = Suy;
-pokemon {
-7 = 2 "Squirtle", 0,
-}
-item {
-};
-
-profile = Klei;
-pokemon {
-1 = 1 "Bulbassalto", 0,
+7 = 4 "Squirtle", 0,
+26 = 0 "Raichu", 0,
 }
 item {
 };

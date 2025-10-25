@@ -2,18 +2,27 @@
 
 namespace ProjetoPokemon.Entities
 {
+    enum RarityCard
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic,
+    }
     internal class ItemCard
     {
         public int Id { get; }
         public string Name { get;}
+        public RarityCard Rarity { get; }
         public TypeItemCard Type { get;}
         public List<EffectCard> Effects = new List<EffectCard>();
         public string Description { get;}
 
-        public ItemCard(int id, string name, TypeItemCard type, List<EffectCard> effects, string description)
+        public ItemCard(int id, string name, RarityCard rarity, TypeItemCard type, List<EffectCard> effects, string description)
         {
             Id = id;
             Name = name;
+            Rarity = rarity;
             Type = type;
             Effects = effects;
             Description = description;

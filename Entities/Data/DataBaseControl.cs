@@ -188,11 +188,20 @@ namespace ProjetoPokemon
                             }
 
                             // EVOLUTION POKEMON ID
-                            int toEvolveID = string.IsNullOrEmpty(row.Cell(6).GetString()) ? 0 : row.Cell(6).GetValue<int>();
-                            if (toEvolveID < 0)
+                            string cellValue = row.Cell(6).GetString(); int[] toEvolveID;
+                            if (string.IsNullOrEmpty(cellValue)) toEvolveID = Array.Empty<int>();
+                            else
                             {
-                                Console.WriteLine($"Error in the evolution ID of Pokémon ID {numberID} {name}, changed to 0.");
-                                toEvolveID = 0;
+                                toEvolveID = cellValue
+                                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s =>
+                                    {
+                                        if (int.TryParse(s, out int id) && id >= 0)
+                                            return id;
+                                        Console.WriteLine($"Error in the evolution ID of Pokémon ID {numberID} {name}, value '{s}' changed to 0.");
+                                        return 0;
+                                    })
+                                    .ToArray();
                             }
 
                             // LEVEL BASE
@@ -333,7 +342,7 @@ namespace ProjetoPokemon
                                 continue;
 
                             string name = row.Cell(2).GetString();
-                            string description = row.Cell(5).GetString();
+                            string description = row.Cell(6).GetString();
 
                             List<EffectCard> effectCard = new();
                             string effectStrg = row.Cell(4).GetString();
@@ -369,8 +378,13 @@ namespace ProjetoPokemon
                                 Console.WriteLine($"Item '{name}' possui tipo inválido: {typeStr}");
                                 continue;
                             }
+                            if (!Enum.TryParse(row.Cell(5).GetString(), out RarityCard rarity))
+                            {
+                                Console.WriteLine($"Item '{name}' possui raridade inválida: {row.Cell(6).GetString()}");
+                                continue;
+                            }
 
-                            ItemCard itemCard = new ItemCard(numberID, name, type, effectCard, description);
+                            ItemCard itemCard = new ItemCard(numberID, name, rarity, type, effectCard, description);
 
                             if (!cardList.Any(p => p.Id == itemCard.Id))
                                 cardList.Add(itemCard);
@@ -429,6 +443,7 @@ namespace ProjetoPokemon
             {
                 Console.WriteLine($"Erro ao salvar profiles: {ex.Message}");
             }
+            Console.WriteLine("Save...");
         }
     }
 }
