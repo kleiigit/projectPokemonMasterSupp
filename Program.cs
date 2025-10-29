@@ -1,4 +1,4 @@
-﻿using ProjetoPokemon.Entities;
+﻿using ProjetoPokemon.Entities.Data;
 using ProjetoPokemon.Entities.Services;
 
 namespace ProjetoPokemon
@@ -7,31 +7,15 @@ namespace ProjetoPokemon
     {
         static void Main(string[] args)
         {
-            List<Pokemon> pokemons = new List<Pokemon>();
-            List<Move> movesList = new List<Move>();
-            List<BoxPokemon> profiles = new List<BoxPokemon>();
-            List<ItemCard> itemCards = new List<ItemCard>();
-
-            DataBaseControl.DataBase(pokemons, movesList, itemCards, profiles);
+            DataBaseControl.DataBase();
             Console.ReadLine();
 
-            //PokedexService.FilterPokedexByType(pokemons);
-
-            Console.ReadLine();
-            if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))
-            {
-                Console.Write("Write a new trainer name: ");
-                string newTrainerName = Console.ReadLine();
-                if(string.IsNullOrEmpty(newTrainerName))
-                    { newTrainerName = "Trainer"; }
-                BoxPokemon newProfile = new BoxPokemon(newTrainerName);
-                newProfile.CreateBox(pokemons);
-                profiles.Add(newProfile);
-            }
-
-            BattleSimService.BattlePokemonSetup(profiles);
-
-            DataBaseControl.SaveProfiles(profiles);
+            BattleSimService.BattleWildPokemon(DataLists.AllProfiles[0]);
+            
+            // PokedexService.FilterPokedexByType();
+            // if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))  BoxPokemon.CreateTrainer();
+            //BattleSimService.BattleTrainerPVP();
+            DataBaseControl.SaveProfiles();
 
         }
     }

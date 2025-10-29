@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Profiles\WildPokemon.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Entities\Data\~%24Pokemon.xlsx" />
   </ItemGroup>
 

@@ -1,4 +1,6 @@
-﻿using ProjetoPokemon.Entities.Enums;
+﻿using ProjetoPokemon.Entities.Data;
+using ProjetoPokemon.Entities.Enums;
+using ProjetoPokemon.Entities.Profiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace ProjetoPokemon.Entities.Services
 {
     static class PokedexService
     {
-        public static void FilterPokedexByType(List<Pokemon> pokemons)
+        public static void FilterPokedexByType()
         {
 
             int selectType = ConsoleMenu.ShowMenu(ConsoleColor.Cyan, Enum.GetValues<TypePokemon>()
@@ -21,7 +23,7 @@ namespace ProjetoPokemon.Entities.Services
             else if (selectType - 1 >= 0 && selectType - 1 < enumValues.Length)
                 chosenType = enumValues[selectType - 1];
             else return;
-            var filteredPokemons = pokemons
+            var filteredPokemons = DataLists.AllPokemons
                 .Where(p => p.Type == chosenType || p.StabType == chosenType)
                 .ToList();
             Console.Write("---- Filtrados: "); Console.WriteLine(filteredPokemons.Count + " Pokémon."); ;

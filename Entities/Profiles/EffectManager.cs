@@ -1,27 +1,35 @@
 ﻿using ProjetoPokemon.Entities.Enums;
 
-namespace ProjetoPokemon.Entities
+namespace ProjetoPokemon.Entities.Profiles
 {
-    internal class EffectMove
+    internal class EffectManager
     {
         public char TargetEffect { get; }
         public EffectType EffectType { get; }
-        public string DescriptionEffect { get; }
+        public string? MoveDescription { get; private set; }
+        public int BonusEffect { get; }
+        public string? EffectCond { get; }
 
-        public EffectMove(char targetEffect, EffectType effectName)
+        public EffectManager(EffectType effectType, int n)
+        {
+            EffectType = effectType;
+            MoveDescription = EffectDescription(n);
+        }
+
+        public EffectManager(char targetEffect, EffectType effectType)
         {
             TargetEffect = targetEffect;
-            EffectType = effectName;
-            DescriptionEffect = EffectDescription();
+            EffectType = effectType;
+            MoveDescription = EffectDescription(0);
         }
-
-        public EffectMove(EffectType effectName) // sem alvo
+        public EffectManager(char targetEffect, EffectType effectType, int bonus, string effectCond)
         {
-            EffectType = effectName;
-            DescriptionEffect = EffectDescription();
+            TargetEffect = targetEffect;
+            EffectType = effectType;
+            MoveDescription = EffectDescription(0);
         }
 
-        private string EffectDescription()
+        private string EffectDescription(int n)
         {
             string description = TargetEffect == 'W' ? "This Pokemon" : "The opponent Pokémon";
             switch(EffectType)
@@ -96,7 +104,20 @@ namespace ProjetoPokemon.Entities
                 case EffectType.RAIN:
                     description = "Play a Rain weather card";
                     break;
-                
+
+
+                case EffectType.ESPECIAL:
+                    switch (n)
+                    {
+                        case 54:
+                            description = "A random move will occur!";
+                            break;
+                        default:
+                            description = "Effect Description.";
+                            return description;
+                    }
+                    break;
+
 
                 default:
                     description = "Effect Description.";
@@ -106,10 +127,27 @@ namespace ProjetoPokemon.Entities
             // especial
             return description;
         }
+        public static void CardEffectBattle(string card, BattlerManager trainer)
+        {
+            string[] cardsEffects = card.Split(';');
+            foreach (string effect in cardsEffects)
+            {
+                string[] effectSplit = effect.Split('.');
+                switch (effectSplit[0])
+                {
+                    case "roll":
+                        trainer.CardBonus += int.Parse(effectSplit[1]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         override public string ToString()
         {
-            return DescriptionEffect;
+            if (MoveDescription == null) MoveDescription = "No Description";
+            return MoveDescription;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using ProjetoPokemon.Entities.Enums;
 
-namespace ProjetoPokemon.Entities
+namespace ProjetoPokemon.Entities.Profiles
 {
     class Pokemon //classe perfil do pokémon
     {
@@ -11,7 +11,6 @@ namespace ProjetoPokemon.Entities
         public int Stage { get; } // estágio do pokémon
         public int[] EvolveID { get; } // lista de pokémons para evoluir
         public string? Form { get; } // forma do pokémon
-        //
         public int LevelBase { get; } // nível básico do pokémon
         public int ExpToEvolve { get; } // experiência necessária para evoluir
         public int CathRate { get; } // taxa de captura do pokémon
@@ -19,14 +18,11 @@ namespace ProjetoPokemon.Entities
         public ColorToken Color { get; } // cor do token do pokémon
         public TokenBackGround Background { get; } // background do pokémon
         public List<Ability> Abilities = new List<Ability>(); // lista de habilidades do pokémon
-        //
-        public bool Shiny { get; } // se o pokémon é shiny ou não
-
         public List<Move> Moves = new List<Move>(); // lista de movimentos do pokémon
 
         public Pokemon(int numberID, string name, TypePokemon type, TypePokemon stabType, int stage, int[] toEvolvePokemon, string? form,
             int levelBase, int expToEvolve, int generation, ColorToken color,
-             TokenBackGround background, List<Ability> abilities, bool shiny, List<Move> moves)
+             TokenBackGround background, List<Ability> abilities, List<Move> moves)
         {
             NumberID = numberID;
             Name = name;
@@ -42,7 +38,6 @@ namespace ProjetoPokemon.Entities
             CathRate = Catchrate();
             Background = background;
             Abilities = abilities;
-            Shiny = shiny;
 
 
             // Aplica o bônus de STAB automaticamente
@@ -72,7 +67,6 @@ namespace ProjetoPokemon.Entities
             Generation = other.Generation;
             Color = other.Color;
             Background = other.Background;
-            Shiny = other.Shiny;
 
             // Copia das abilities (cada Ability deve ser clonável ou imutável)
             Abilities = new List<Ability>(other.Abilities);
@@ -97,19 +91,9 @@ namespace ProjetoPokemon.Entities
             else
                 return LevelBase + 2;
         }
-
-        public string StabString()
-        {
-            if (StabType != TypePokemon.None)
-            {
-                return $"{Type.ToString()}/{StabType}";
-            }
-            return Type.ToString();
-        }
-
         override public string ToString()
         {
-            string pokemonDescription = $"{NumberID.ToString("D3")}# {Name}, {StabString()}";
+            string pokemonDescription = $"{NumberID.ToString("D3")}# {Name}";
             pokemonDescription += " - ";
             for (int i = 0; i < Moves.Count; i++)
             {

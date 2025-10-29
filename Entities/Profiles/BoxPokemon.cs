@@ -1,25 +1,29 @@
 ﻿using ProjetoPokemon.Entities.Enums;
 using System.Text.RegularExpressions;
-using System.Linq;
 using ProjetoPokemon.Entities.Services;
+using ProjetoPokemon.Entities.Data;
 
-namespace ProjetoPokemon.Entities
+namespace ProjetoPokemon.Entities.Profiles
 {
     internal class BoxPokemon
     {
         public string Nickname { get;}
-        public List<ProfilePokemon> ListBox = new List<ProfilePokemon>();
+        public List<ProfilePokemon> ListPokemon = new List<ProfilePokemon>();
         public Dictionary<ItemCard,int> ListCards = new Dictionary<ItemCard,int>();
+
 
         public BoxPokemon(string nickname)
         {
             Nickname = nickname;
         }
-
         public BoxPokemon(string nickname, List<ProfilePokemon> listBox)
         {
             Nickname = nickname;
-            ListBox = listBox;
+            ListPokemon = listBox;
+        }
+        public void AddPokemon(ProfilePokemon profile)
+        {
+            ListPokemon.Add(profile);
         }
         public ItemCard? SelectItem(TypeItemCard type)
         {
@@ -64,23 +68,53 @@ namespace ProjetoPokemon.Entities
 
             return selected;
         }
-        public static Pokemon ChoosePokemon(List<Pokemon> List, int[] number)
+        public ProfilePokemon SelectPokemon(ConsoleColor color)
         {
+            if (Nickname == null)
+            {
+                throw new Exception("Trainer box is null.");
+            }
+            List<ProfilePokemon> listPokemon = ListPokemon.Where(p => p.Conditions != StatusConditions.KNOCKED).ToList();
+            int index = ConsoleMenu.ShowMenu(color, listPokemon.Select(m => m.ToString()).ToList(), $"Choose {Nickname}'s Pokémon");
+            ProfilePokemon pokemon = listPokemon[index];
+
+            BattleLog.AddLog($"## {Nickname} selected {pokemon.Name} as their Pokémon.\n" + pokemon.Pokemon.ToString());
+            return pokemon;
+        }
+        public static Pokemon ChoosePokemon(int[] number)
+        {
+            List<Pokemon> List = DataLists.AllPokemons.ToList();
             Pokemon pokemon = ConsoleMenu.ShowMenu(List.Where(p => number.Contains(p.NumberID)).ToDictionary(p => p, p => p.Name), "Choose a initial Pokemon");
             return pokemon;
         }
 
-        public void CreateBox(List<Pokemon> allPokemons)
+        public static void CreateTrainer()
         {
-                Console.WriteLine($"Choose your initial Pokémon:");
-                var pokemon = ChoosePokemon(allPokemons, new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
+            Console.Write("Write a new trainer name: ");
+            string newTrainerName = Console.ReadLine();
+            if (string.IsNullOrEmpty(newTrainerName))
+            { newTrainerName = "Trainer"; }
+            BoxPokemon newProfile = new BoxPokemon(newTrainerName);
+            Console.WriteLine($"Choose your initial Pokémon:");
+                var pokemon = ChoosePokemon(new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
                 var initialPokemon = new ProfilePokemon(pokemon, pokemon.Name, 0);
-                initialPokemon.NickName();
-                ListBox.Add(initialPokemon);
-                Console.WriteLine($"{initialPokemon.Name} added to your box!\n");
+                initialPokemon.NickNamePokemon();
+                newProfile.AddPokemon(initialPokemon);
+            Console.WriteLine($"{initialPokemon.Name} added to your box!\n");
+            DataLists.AddProfile(newProfile);
+        }
+        public void RecoverPokémon()
+        {
+            foreach (var profile in ListPokemon)
+            {
+                profile.Conditions = StatusConditions.NORMAL;
+                profile.ConditionCount = 0;
+                profile.CanAttack = true;
+            }
+            Console.WriteLine(Nickname + ": All Pokémon have been healed!");
         }
 
-        public static BoxPokemon FromText(string text, List<Pokemon> allPokemons, List<ItemCard> allItems)
+        public static BoxPokemon FromText(string text)
         {
             string nickname = "";
             var pokemons = new List<ProfilePokemon>();
@@ -119,17 +153,19 @@ namespace ProjetoPokemon.Entities
                 }
                 else if (readingPokemon)
                 {
-                    // Regex captura: ID, Level, Nickname (entre aspas), CardID
-                    var match = Regex.Match(line, @"(\d+)\s*=\s*(\d+)\s*""([^""]*)""\s*,\s*(\d+)");
+                    // Regex captura: ID, Level, Nickname (entre aspas), CardID, Status
+                    var match = Regex.Match(line, @"(\d+)\s*=\s*(\d+)\s*""([^""]*)""\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\*))?");
                     if (match.Success)
                     {
                         int id = int.Parse(match.Groups[1].Value);
                         int level = int.Parse(match.Groups[2].Value);
                         string pNickname = match.Groups[3].Value;
                         int cardID = int.Parse(match.Groups[4].Value);
+                        int status = int.Parse(match.Groups[5].Value);
+                        bool shiny = match.Groups[6].Success && match.Groups[6].Value == "*";
 
                         // Busca Pokémon existente e cria cópia
-                        var originalPokemon = allPokemons.FirstOrDefault(p => p.NumberID == id);
+                        var originalPokemon = DataLists.GetPokemonID(id);
                         if (originalPokemon != null)
                         {
                             var pokemonCopy = new Pokemon(originalPokemon); // construtor de cópia
@@ -140,7 +176,11 @@ namespace ProjetoPokemon.Entities
                             );
 
                             if (cardID != 0)
-                                profile.AttachCard = allItems.FirstOrDefault(c => c.Id == cardID);
+                                profile.AttachCard = DataLists.GetItemCardID(cardID);
+
+                            if (status != 0)
+                                profile.Conditions = (StatusConditions)status;
+                            profile.SetShiny(shiny);
 
                             pokemons.Add(profile);
                             Console.WriteLine(profile.Name + " adicionado!");
@@ -156,7 +196,7 @@ namespace ProjetoPokemon.Entities
                         int id = int.Parse(parts[0].Trim());
                         int quantity = int.Parse(parts[1].Trim());
 
-                        var card = allItems.FirstOrDefault(c => c.Id == id);
+                        var card = DataLists.GetItemCardID(id);
                         if (card != null)
                         {
                             if (items.ContainsKey(card))
@@ -180,11 +220,13 @@ namespace ProjetoPokemon.Entities
 
             // Bloco de Pokémons
             result += "pokemon {" + nl;
-            foreach (var p in ListBox)
+            foreach (var p in ListPokemon)
             {
                 int cardID = p.AttachCard?.Id ?? 0;
+                int status = (int)p.Conditions;
                 string pName = string.IsNullOrWhiteSpace(p.Name) ? "" : p.Name;
-                result += $"{p.Pokemon.NumberID} = {p.Level} \"{pName}\", {cardID},{nl}";
+                string shinyFlag = p.Shiny ? ", *" : "";
+                result += $"{p.Pokemon.NumberID} = {p.LevelExp} \"{pName}\", {cardID}, {status}{shinyFlag}{nl}";
             }
             result += "}" + nl;
 
@@ -200,9 +242,9 @@ namespace ProjetoPokemon.Entities
         public override string ToString()
         {
             string description = "Pokemon: \n";
-            foreach(var pokemon in ListBox)
+            foreach(var pokemon in ListPokemon)
             {
-                description += $"{pokemon.Name} ({pokemon.Pokemon.Name}) Level: " + pokemon.Level;
+                description += $"{pokemon.Name} ({pokemon.Pokemon.Name}) Level: " + pokemon.LevelExp;
                 if (pokemon.AttachCard != null)
                 {
                     description += ", segurando: " + pokemon.AttachCard.Name;

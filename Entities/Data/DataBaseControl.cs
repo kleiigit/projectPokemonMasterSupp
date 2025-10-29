@@ -1,10 +1,10 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
 using ProjetoPokemon.Entities;
+using ProjetoPokemon.Entities.Data;
 using ProjetoPokemon.Entities.Enums;
+using ProjetoPokemon.Entities.Profiles;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace ProjetoPokemon
 {
@@ -29,7 +29,7 @@ namespace ProjetoPokemon
             itemCardPath = Path.Combine(pathData, "ItemCard.xlsx");
         }
 
-        public static void DataBase(List<Pokemon> pokemons, List<Move> movesList, List<ItemCard> cardList, List<BoxPokemon> profiles)
+        public static void DataBase()
         {
             try
             {
@@ -101,38 +101,23 @@ namespace ProjetoPokemon
                                 efRoll = 0;
                             }
 
-                            List<EffectMove> effectMoves = new();
+                            List<EffectManager> effectMoves = new();
                             string effectMove = row.Cell(6).GetString().ToUpper();
                             if (!string.IsNullOrEmpty(effectMove))
                             {
                                 string[] effectVet = effectMove.Split(';');
                                 foreach (string effect in effectVet)
                                 {
-                                    try
-                                    {
-                                        string[] parts = effect.Split('.');
-                                        if (parts.Length < 2)
-                                        {
-                                            effectMoves.Add(new EffectMove(Enum.Parse<EffectType>(parts[0].Trim())));
-                                            continue;
-                                        }
-
-                                        char targetEffect = char.Parse(parts[0].Trim());
-                                        EffectType effectSetup = Enum.Parse<EffectType>(parts[1].Trim());
-                                        effectMoves.Add(new EffectMove(targetEffect, effectSetup));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine($"Erro ao ler efeito em MoveID {moveID}: {ex.Message}");
-                                    }
-                                    
+                                    EffectManager effectAdd = EffectSetup.EffectStance(effect, moveID);
+                                    if (effectAdd != null) effectMoves.Add(effectAdd);
+                                    else { Console.WriteLine($"Error Effect {effect} is null, Move ID {moveID}"); continue; }
                                 }
                             }
 
                             Move move = new Move(moveID, type, moveNameEng, power, effectMoves, diceSides, efRoll);
 
-                            if (!movesList.Any(p => p.MoveID == move.MoveID))
-                                movesList.Add(move);
+                            if (!DataLists.AllMoves.Any(p => p.MoveID == move.MoveID))
+                                DataLists.AddMove(move);
                             else
                                 Console.WriteLine($"Duplicata detectada: Move '{moveNameEng}' com ID {move.MoveID}");
                         }
@@ -300,7 +285,7 @@ namespace ProjetoPokemon
                                 {
                                     if (int.TryParse(move.Trim(), out int moveID))
                                     {
-                                        Move? moveFound = movesList.Find(m => m.MoveID == moveID);
+                                        Move? moveFound = DataLists.GetMoveID(moveID);
                                         if (moveFound != null)
                                             pokeMoves.Add(moveFound);
                                         else
@@ -314,9 +299,9 @@ namespace ProjetoPokemon
                                 Pokemon pokemon = new Pokemon(
                                     numberID, name, type, stabType, stage, toEvolveID, form,
                                     levelBase, expToEvolve, generation,
-                                    color, background, abilities, shiny, pokeMoves);
-                            if (!pokemons.Any(p => p.NumberID == pokemon.NumberID))
-                                pokemons.Add(pokemon);
+                                    color, background, abilities, pokeMoves);
+                            if (!DataLists.AllPokemons.Any(p => p.NumberID == pokemon.NumberID))
+                                DataLists.AddPokemon(pokemon);
                             else
                                 Console.WriteLine($"Duplicata detectada: Pokémon '{name}' com ID {pokemon.NumberID}");
                         }
@@ -342,33 +327,23 @@ namespace ProjetoPokemon
                                 continue;
 
                             string name = row.Cell(2).GetString();
+                            if (string.IsNullOrWhiteSpace(name))
+                            {
+                                Console.WriteLine($"Item ID {numberID} Error (Name error).");
+                                continue;
+                            }
                             string description = row.Cell(6).GetString();
 
-                            List<EffectCard> effectCard = new();
+                            List<EffectManager> effectCard = new();
                             string effectStrg = row.Cell(4).GetString();
                             if (!string.IsNullOrEmpty(effectStrg))
                             {
                                 string[] effectVet = effectStrg.Split(';');
-                                foreach (string effect in effectVet)
+                                foreach (var effect in effectVet)
                                 {
-                                    try
-                                    {
-                                        string[] parts = effect.Split('.');
-                                        if (parts.Length < 3)
-                                        {
-                                            effectCard.Add(new EffectCard(char.Parse(parts[0].Trim()), Enum.Parse<EffectType>(parts[1])));
-                                            continue;
-                                        }
-
-                                        char targetEffect = char.Parse(parts[0].Trim());
-                                        EffectType effectSetup = Enum.Parse<EffectType>(parts[1].Trim());
-                                        int bonus = int.Parse(parts[2].Trim());
-                                        effectCard.Add(new EffectCard(targetEffect, effectSetup, bonus));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine($"Erro ao ler efeito em Item '{name}': {ex.Message}");
-                                    }
+                                    EffectManager effectAdd = EffectSetup.EffectStance(effect, numberID);
+                                    if (effectAdd != null) effectCard.Add(effectAdd);
+                                    else { Console.WriteLine($"Error Effect {effect} is null, Item ID {numberID}"); continue; }
                                 }
                             }
 
@@ -386,8 +361,8 @@ namespace ProjetoPokemon
 
                             ItemCard itemCard = new ItemCard(numberID, name, rarity, type, effectCard, description);
 
-                            if (!cardList.Any(p => p.Id == itemCard.Id))
-                                cardList.Add(itemCard);
+                            if (!DataLists.AllItemCards.Any(p => p.Id == itemCard.Id))
+                                DataLists.AddItemCard(itemCard);
                             else
                                 Console.WriteLine($"Duplicata detectada: Item '{name}' com ID {itemCard.Id}");
                         }
@@ -413,7 +388,7 @@ namespace ProjetoPokemon
                     try
                     {
                         if (string.IsNullOrWhiteSpace(block)) continue;
-                        profiles.Add(BoxPokemon.FromText(block, pokemons, cardList));
+                        DataLists.AddProfile(BoxPokemon.FromText(block));
                     }
                     catch (Exception ex)
                     {
@@ -427,13 +402,13 @@ namespace ProjetoPokemon
             }
         }
 
-        public static void SaveProfiles(List<BoxPokemon> profiles)
+        public static void SaveProfiles()
         {
             try
             {
                 using (StreamWriter writer = new StreamWriter(trainerPath))
                 {
-                    foreach (var profile in profiles)
+                    foreach (var profile in DataLists.AllProfiles)
                     {
                         writer.WriteLine(profile.SaveProfile());
                     }
@@ -447,3 +422,4 @@ namespace ProjetoPokemon
         }
     }
 }
+
