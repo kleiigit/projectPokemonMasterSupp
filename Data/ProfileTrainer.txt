@@ -1,0 +1,76 @@
+profile = Ash Ketchum;
+pokemon {
+3 = 2 "Bulbassalto", 1, 7, *
+36 = 2 "Clefable", 0, 0
+5 = 0 "Charmeleon", 0, 5
+78 = 1 "Rapidash", 2, 0
+45 = 1 "Vileplume", 0, 0
+61 = 1 "Sapo", 0, 0
+93 = 1 "Haunter", 0, 0
+125 = 1 "Buzz", 0, 0, *
+42 = 2 "Golbat", 0, 3
+130 = 0 "Kabuto", 0, 0
+20 = 0 "Raticate", 0, 0
+104 = 0 "Cubone", 0, 0
+}
+item {
+6 = 1,
+22 = 1,
+26 = 1,
+14 = 2,
+36 = 4,
+1 = 2,
+4 = 2,
+25 = 1,
+35 = 3,
+15 = 2,
+2 = 3,
+16 = 1,
+8 = 2,
+3 = 5,
+32 = 1,
+17 = 1,
+12 = 1,
+23 = 1,
+5 = 2,
+38 = 1,
+29 = 1,
+};
+
+profile = Brock;
+pokemon {
+8 = 0 "Wartortle", 0, 0
+9 = 0 "Blastoise", 0, 0
+22 = 0 "Passarinho", 0, 0
+12 = 0 "Butterfree", 0, 0
+110 = 0 "Weezing", 0, 0, *
+95 = 0 "Onix", 0, 0
+149 = 0 "Abeia", 0, 0
+68 = 0 "Macho", 0, 0
+}
+item {
+};
+
+profile = Misty;
+pokemon {
+7 = 1 "Squirtle", 0, 0
+26 = 6 "Raichu", 0, 0
+54 = 0 "Psyduck", 0, 0
+17 = 4 "Beedrill", 0, 0
+134 = 0 "Vaporeon", 0, 0
+150 = 0 "Mewtwo", 0, 0
+141 = 0 "mp", 0, 0
+}
+item {
+};
+
+profile = Akain;
+pokemon {
+7 = 0 "Squirtle", 0, 0
+74 = 0 "Pedroa", 0, 0
+74 = 0 "Pedroso", 0, 0
+123 = 4 "Scyther", 0, 0
+}
+item {
+};
+

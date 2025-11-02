@@ -1,5 +1,6 @@
-﻿using ProjetoPokemon.Entities.Data;
-using ProjetoPokemon.Entities.Services;
+﻿
+using ProjetoPokemon.Data;
+using ProjetoPokemon.Services;
 
 namespace ProjetoPokemon
 {
@@ -7,16 +8,18 @@ namespace ProjetoPokemon
     {
         static void Main(string[] args)
         {
+
             DataBaseControl.DataBase();
             Console.ReadLine();
 
-            BattleSimService.BattleWildPokemon(DataLists.AllProfiles[0]);
-            
-            // PokedexService.FilterPokedexByType();
-            // if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))  BoxPokemon.CreateTrainer();
-            //BattleSimService.BattleTrainerPVP();
-            DataBaseControl.SaveProfiles();
+            MasterGame.CreateGameItemDeck();
 
+            DataLists.AllProfiles[0].DrawItemCard(20);
+            // if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))  BoxPokemon.CreateTrainer();
+
+
+            MenuControl.ShowMenuOptions();
+            DataBaseControl.SaveProfiles();
         }
     }
 }

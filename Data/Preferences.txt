@@ -1,0 +1,3 @@
+# Configurações iniciais do jogo
+# language = 0 (Português), 1 (Inglês), 2 (Espanhol)
+language = 0

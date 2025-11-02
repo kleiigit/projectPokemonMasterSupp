@@ -1,0 +1,18 @@
+﻿
+using ProjetoPokemon.Entities;
+
+namespace ProjetoPokemon.Enums
+{
+    enum EffectType
+    {
+        POISON, BURN, PARALYZE, SLEEP, FREEZE, CONFUSION,
+        TWODICES, SOMADICES, THREEDICES,
+        RECHARGE, KO, ESPECIAL, FIRST, CHANGE, HALFLEVEL, PRECISION, LIFE, FURY, CARD, IMMUNE,
+        HEAL, EXPSHARE, STATUS, ROLL, BLOCKMOVE, REWARD, ADDEFFECT, DRAW, DISCARD, DICESIDE,
+        EFFECTIVE, TYPE, REDDICE, REROLL, BOOST, CATCH, COLOR,
+        RAIN, SUNNYDAY, SNOW, SAND,
+        ADDROLL, ADDPOWER, ADDLEVEL,
+        // BuffsAndDebuffsMoves
+        DOWNED,
+    }
+}
