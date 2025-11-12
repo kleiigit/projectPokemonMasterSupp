@@ -1,4 +1,5 @@
 ﻿
+using ProjetoPokemon.Data;
 using ProjetoPokemon.Enums;
 
 namespace ProjetoPokemon.Entities
@@ -6,13 +7,13 @@ namespace ProjetoPokemon.Entities
     internal class Move
     {
         public int MoveID { get; }
-        public TypePokemon Type { get; } // tipo do movimento
+        public TypePokemon Type { get; private set; } // tipo do movimento
         public string Name { get; } // nome do movimento
         public int Power { get; private set; } // poder do movimento
         public List<EffectManager> Effects = new List<EffectManager>(); // efeitos do movimento
         public int DiceSides { get; private set; } // lados do dado do movimento
         public int EffectRoll { get; } // rolagem de efeito
-        public bool CanUse { get; private set; } = true;
+        public bool CanUse { get; set; } = true;
         public double Rate { get; private set; }
 
         public Move(int moveID, TypePokemon type, string name, int power, int diceSides)
@@ -36,41 +37,81 @@ namespace ProjetoPokemon.Entities
         
         public static int DiceSidesMove(int diceSides) { if (diceSides == 0) diceSides = 6; return diceSides;}
         public void StabMove() { if (Power != 0 && Power < 4) Power += 1;}
-        public void RateWin(double rate)
+        public void RateWin(List<double[]> rate)
         {
-            Rate = rate;
+            Rate = rate.Min(r => r[0]);
         }
         public void RechargeMove() { CanUse = false; }
         public void HalfLevelPower(ref int powerM) { Power = Math.Max(1, (int)Math.Floor(powerM / 2.0)); }
+        
+        public void ChangePower(int n)
+        {
+            Power = n;
+        }
         public void BoostPower()
         {
             Power++;
-        }
-        public void ChangePower(int newPower)
-        {
-            Power = newPower;
         }
         public void ChangeSide(int newSide)
         {
             DiceSides = newSide;
         }
+        public void ChangeType(TypePokemon newType)
+        {
+            Type = newType;
+        }
+
         public Move Copy()
         {
+            // Cópia profunda e segura dos efeitos
+            List<EffectManager> clonedEffects = new List<EffectManager>();
+            foreach (var effect in Effects)
+            {
+                var clonedEffect = new EffectManager(
+                    effect.TargetEffect,
+                    effect.EffectType,
+                    effect.BonusEffect,
+                    effect.EffectCond ?? string.Empty,
+                    MoveID
+                );
+                clonedEffects.Add(clonedEffect);
+            }
+
             Move copiedMove = new Move(
                 MoveID,
                 Type,
                 Name,
                 Power,
-                Effects,
+                clonedEffects,
                 DiceSides,
                 EffectRoll
             );
 
-            // Copia propriedades adicionais
-            copiedMove.RateWin(Rate);
-            if (!CanUse) copiedMove.RechargeMove();
+            if (!CanUse)
+                copiedMove.RechargeMove();
 
             return copiedMove;
+        }
+        public string SummaryMove()
+        {
+            string pokemonOwnes = string.Empty;
+            List<Pokemon> moveOwner = DataLists.AllPokemons.Where(p => p.Moves.Any(m => m.Name == Name)).ToList();
+            if (moveOwner.Count > 0)
+            {
+                foreach (var pokemon in moveOwner)
+                {
+                    pokemonOwnes += pokemon.Name.ToUpper() + ", ";
+                }
+            }
+            else
+            {
+                pokemonOwnes = "None";
+            }
+            return ToString() + "\n\nPokemon: " + pokemonOwnes;
+        }
+        public string MoveMenu()
+        {
+            return $"({Rate:F0}%) " + ToString();
         }
         override public string ToString()
         {
@@ -80,7 +121,7 @@ namespace ProjetoPokemon.Entities
                 EffectsDescription += effect.ToString();
                 if (effect != Effects[^1]) EffectsDescription += " | ";
             }
-            string moveStr = $"({Rate.ToString("F0")}%) {Name} - {Type} - Power: {Power}";
+            string moveStr = $"{Name} - {Type} - Power: {Power}";
             if (DiceSides != 6) moveStr += $" (D{DiceSides})";
             if (Effects.Count > 0)
             {

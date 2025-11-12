@@ -1,5 +1,6 @@
 ﻿
 
+using DocumentFormat.OpenXml.Drawing;
 using ProjetoPokemon.Enums;
 
 namespace ProjetoPokemon.Entities
@@ -19,19 +20,19 @@ namespace ProjetoPokemon.Entities
             MoveDescription = EffectDescription(n);
         }
 
-        public EffectManager(char targetEffect, EffectType effectType)
+        public EffectManager(char targetEffect, EffectType effectType, int n)
         {
             TargetEffect = targetEffect;
             EffectType = effectType;
-            MoveDescription = EffectDescription(0);
+            MoveDescription = EffectDescription(n);
         }
-        public EffectManager(char targetEffect, EffectType effectType, int bonus, string effectCond)
+        public EffectManager(char targetEffect, EffectType effectType, int bonus, string effectCond, int n)
         {
             TargetEffect = targetEffect;
             EffectType = effectType;
             BonusEffect = bonus;
             EffectCond = effectCond;
-            MoveDescription = EffectDescription(0);
+            MoveDescription = EffectDescription(n);
         }
 
         private string EffectDescription(int n)
@@ -94,6 +95,9 @@ namespace ProjetoPokemon.Entities
                 case EffectType.BOOST:
                     description = "This move boosts its power after use.";
                     break;
+                case EffectType.NERF:
+                    description += " has a disadvantage on its next rolls until the end of the battle.";
+                    break;
 
                 case EffectType.TWODICES:
                     description += " use two dice and choose the";
@@ -109,6 +113,18 @@ namespace ProjetoPokemon.Entities
 
                 case EffectType.RAIN:
                     description = "Play a Rain weather card";
+                    break;
+                case EffectType.SNOW:
+                    description = "Play a Snow weather card";
+                    break;
+                case EffectType.SUNNYDAY:
+                    description = "Play a Sunny Day weather card";
+                    break;
+                case EffectType.SAND:
+                    description = "Play a Sandstorm weather card";
+                    break;
+                case EffectType.SAFEGUARD:
+                    description = "Play a Safeguard card";
                     break;
 
 
@@ -130,14 +146,57 @@ namespace ProjetoPokemon.Entities
                         case 36: // mirror move
                             description = "Copy the opponent’s move.";
                             break;
-                        case 157:
+                        case 157: // dream eater
                             description = "2x attack power if the opponent is asleep.";
                             break;
+                        case 173: // hidden power
+                            description = "This move has a random type.";
+                            break;
+                        case 176: // torment
+                            description += " cannot use the same move in consecutive turns.";
+                            break;
+                        case 177: // taunt
+                            description += " cannot use move with 0 power.";
+                                break;
+                        case 179: // protect
+                            description += " move has 0 power, and its effects cannot affect your Pokémon.";
+                                break;
+                        case 180: // roost
+                            description += " may lose its Flying-type";
+                                break;
+                        case 168: // brick break.
+                            description += " cannot be affected by the opponent’s move disadvantages.";
+                                break;
+                        case 186: //facade
+                            description = "If the opponent is affected by a status condition, it gains +2.";
+                                break;
+                        case 189: // thief
+                            description = "This move can steal the opponent’s attached card.";
+                                break;
+                        case 196: // false swipe
+                            description = "If this move defeats a wild Pokémon, it grants a +1 capture bonus.";
+                                break;
+                        case 199: // incinerate
+                            description = "This move disable opponent's attach card.";
+                                break;
+                        case 202: // acrobatics
+                            description = "This move has a bonus if no item is attached.";
+                               break;
+                        case 203: // embargo
+                            description = "Disable all item card opponent.";
+                            break;
 
-                        //payday precisa criar o deck de cartas antes
+                            // 206 retaliate
+                        case 218: // sleep talk
+                            description += " can attack while asleep. Cannot be used while awake.";
+                            break;
 
+                        // retaliation
+                        case 223: // nature power
+                            description = "This move becomes a new move.";
+                            break;
                         default:
-                            description = "Effect Description.";
+                            description = "No Effect Description.";
                             return description;
                     }
                     break;

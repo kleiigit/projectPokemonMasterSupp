@@ -8,11 +8,10 @@ namespace ProjetoPokemon.Entities
     {
         public int NumberID { get; } // ID do pokémon
         public string Name { get; } // nome do pokémon
-        public TypePokemon Type { get; } // tipo do pokémon
+        public TypePokemon Type { get; private set; } // tipo do pokémon
         public TypePokemon StabType { get; } // segundo tipo do pokémon
         public int Stage { get; } // estágio do pokémon
         public int[] EvolveID { get; } // lista de pokémons para evoluir
-        public string? Form { get; } // forma do pokémon
         public int LevelBase { get; } // nível básico do pokémon
         public int ExpToEvolve { get; } // experiência necessária para evoluir
         public int CathRate { get; } // taxa de captura do pokémon
@@ -22,7 +21,7 @@ namespace ProjetoPokemon.Entities
         public List<Ability> Abilities = new List<Ability>(); // lista de habilidades do pokémon
         public List<Move> Moves = new List<Move>(); // lista de movimentos do pokémon
 
-        public Pokemon(int numberID, string name, TypePokemon type, TypePokemon stabType, int stage, int[] toEvolvePokemon, string? form,
+        public Pokemon(int numberID, string name, TypePokemon type, TypePokemon stabType, int stage, int[] toEvolvePokemon,
             int levelBase, int expToEvolve, int generation, ColorToken color,
              TokenBackGround background, List<Ability> abilities, List<Move> moves)
         {
@@ -32,7 +31,6 @@ namespace ProjetoPokemon.Entities
             StabType = stabType;
             Stage = stage;
             EvolveID = toEvolvePokemon;
-            Form = form;
             LevelBase = levelBase;
             ExpToEvolve = expToEvolve;
             Generation = generation;
@@ -63,7 +61,6 @@ namespace ProjetoPokemon.Entities
             StabType = other.StabType;
             Stage = other.Stage;
             EvolveID = other.EvolveID;
-            Form = other.Form;
             LevelBase = other.LevelBase;
             ExpToEvolve = other.ExpToEvolve;
             Generation = other.Generation;
@@ -92,6 +89,24 @@ namespace ProjetoPokemon.Entities
                 return LevelBase + 1;
             else
                 return LevelBase + 2;
+        }
+        public void ChangeType(TypePokemon newType)
+        {
+            Type = newType;
+        }
+        public string GetStage()
+        {
+            switch(Stage)
+            {
+                case 1: return "Stage 1";
+                case 2: return "Stage 2";
+                default: return "Basic";
+            }
+        }
+        public string GetStabType()
+        {
+            if (StabType != TypePokemon.None) return Type.ToString() + "/" + StabType.ToString();
+            else return Type.ToString();
         }
         override public string ToString()
         {

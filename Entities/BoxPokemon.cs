@@ -95,8 +95,13 @@ namespace ProjetoPokemon.Entities
             List<ProfilePokemon> listPokemon = ListPokemon.Where(p => p.Conditions != StatusConditions.KNOCKED).ToList();
             int index = ConsoleMenu.ShowMenu(color, listPokemon.Select(m => m.ToString()).ToList(), $"Choose {Nickname}'s Pokémon");
             ProfilePokemon pokemon = listPokemon[index];
-
-            BattleLog.AddLog($"## {Nickname} selected {pokemon.Name} as their Pokémon.\n" + pokemon.Pokemon.ToString());
+            BattleLog.AddLog($"## {Nickname} selected {pokemon.NickPokemon} as their Pokémon.\n" + pokemon.Pokemon.ToString());
+            if (pokemon.MovesPokemon.Any(p => p.MoveID == 173))
+            {
+                int typeCount = DiceRollService.RollDice(1, Enum.GetValues(typeof(TypePokemon)).Length - 1);
+                Move filtredMove = pokemon.MovesPokemon.Where(p => p.MoveID == 173).First();
+                filtredMove.ChangeType((TypePokemon)typeCount);
+            }
             return pokemon;
         }
         public static Pokemon ChoosePokemon(int[] number)
@@ -120,9 +125,9 @@ namespace ProjetoPokemon.Entities
             Console.WriteLine($"Choose your initial Pokémon:");
                 var pokemon = ChoosePokemon(new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
                 var initialPokemon = new ProfilePokemon(pokemon, pokemon.Name, 0);
-                initialPokemon.NickNamePokemon();
+                initialPokemon.PutNicknamePokemon();
                 newProfile.AddPokemon(initialPokemon);
-            Console.WriteLine($"{initialPokemon.Name} added to your box!\n");
+            Console.WriteLine($"{initialPokemon.NickPokemon} added to your box!\n");
             DataLists.AddProfile(newProfile);
         }
         public void RecoverPokémon()
@@ -135,7 +140,6 @@ namespace ProjetoPokemon.Entities
             }
             Console.WriteLine(Nickname + ": All Pokémon have been healed!");
         }
-
         public static BoxPokemon FromText(string text)
         {
             string nickname = "";
@@ -205,7 +209,7 @@ namespace ProjetoPokemon.Entities
                             profile.SetShiny(shiny);
 
                             pokemons.Add(profile);
-                            Console.WriteLine(profile.Name + " adicionado!");
+                            Console.WriteLine(profile.NickPokemon + " adicionado!");
                         }
                     }
                 }
@@ -263,7 +267,7 @@ namespace ProjetoPokemon.Entities
             {
                 int cardID = p.AttachCard?.Id ?? 0;
                 int status = (int)p.Conditions;
-                string pName = string.IsNullOrWhiteSpace(p.Name) ? "" : p.Name;
+                string pName = string.IsNullOrWhiteSpace(p.NickPokemon) ? "" : p.NickPokemon;
                 string shinyFlag = p.Shiny ? ", *" : "";
                 result += $"{p.Pokemon.NumberID} = {p.LevelExp} \"{pName}\", {cardID}, {status}{shinyFlag}{nl}";
             }

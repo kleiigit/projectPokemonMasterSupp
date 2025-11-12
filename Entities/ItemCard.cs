@@ -48,15 +48,15 @@ namespace ProjetoPokemon.Entities
                     {
                         case EffectType.ADDROLL:
                             targetEffects.CardBonus += effect.BonusEffect;
-                            BattleLog.AddLog($"{user.UsedCard.Name} add bonus roll of {targetEffects.SelectedPokemon.Name}.");
+                            BattleLog.AddLog($"{user.UsedCard.Name} add bonus roll of {targetEffects.SelectedPokemon.NickPokemon}.");
                             break;
                         case EffectType.TWODICES:
                             targetEffects.NumberDices += effect.TargetEffect == 'W' ? +1 : -1;
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.Name} dices.");
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices.");
                             break;
                         case EffectType.THREEDICES:
                             targetEffects.NumberDices += effect.TargetEffect == 'W' ? 2 : -2;
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.Name} dices.");
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices.");
                             break;
                         case EffectType.HEAL:
                             for (int i = 0; i < int.Parse(condSplit[0]); i++)
@@ -83,14 +83,14 @@ namespace ProjetoPokemon.Entities
                                 {
                                     int index = ConsoleMenu.ShowMenu(ConsoleColor.Magenta, listPokemon.Select(m => m.ToString()).ToList(), "Select a Pokemon to healing");
                                     listPokemon[index].Conditions = StatusConditions.NORMAL;
-                                    BattleLog.AddLog($"{listPokemon[index].Name} was healed.");
+                                    BattleLog.AddLog($"{listPokemon[index].NickPokemon} was healed.");
                                 }
                                 
                             }
                             break;
                         case EffectType.DICESIDE:
                             targetEffects.UsedMove.ChangeSide(effect.BonusEffect);
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.Name} dices sides.");
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices sides.");
                             break;
                     }
                     BattleLog.AddLog($"({user.UsedCard.Description})");
@@ -198,6 +198,18 @@ namespace ProjetoPokemon.Entities
             return bonusCatch;
         }
 
+        public ItemCard Copy()
+        {
+            ItemCard copiedItem = new ItemCard(
+                Id,
+                Name,
+                Rarity,
+                Type,
+                Effects,
+                Description
+            );
+            return copiedItem;
+        }
         public override string ToString()
         {
             return Name + $" - {Rarity.ToString()} {Type.ToString()} Card ({Description})";

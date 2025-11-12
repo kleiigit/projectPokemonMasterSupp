@@ -22,7 +22,20 @@ namespace ProjetoPokemon.Data
 
         public static void AddMove(Move move) { _allMoves.Add(move); }
         public static Move GetMoveID(int id) { return _allMoves.First(m => m.MoveID == id); }
+        public static Move? GetMoveName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
 
+            // Normaliza o texto: remove espaços e converte para maiúsculas
+            string normalizedInput = new string(name.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToUpperInvariant();
+
+            return _allMoves.FirstOrDefault(m =>
+            {
+                string normalizedMoveName = new string(m.Name.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToUpperInvariant();
+                return normalizedMoveName == normalizedInput;
+            });
+        }
         public static void AddItemCard(ItemCard itemCard) { _allItemCards.Add(itemCard); }
         public static ItemCard GetItemCardID(int id) { return _allItemCards.First(i => i.Id == id); }
 
