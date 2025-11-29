@@ -1,8 +1,9 @@
-﻿using ProjetoPokemon.Data;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using ProjetoPokemon.Data;
 using ProjetoPokemon.Enums;
 using ProjetoPokemon.Services;
-using System.Linq;
 using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ProjetoPokemon.Entities
 {
@@ -10,6 +11,7 @@ namespace ProjetoPokemon.Entities
     {
         public string Nickname { get;}
         public List<ProfilePokemon> ListPokemon = new List<ProfilePokemon>();
+
         public Dictionary<ItemCard,int> ListCards = new Dictionary<ItemCard,int>();
         public List<BadgeEnum> Badges = new List<BadgeEnum>();
 
@@ -23,10 +25,35 @@ namespace ProjetoPokemon.Entities
             Nickname = nickname;
             ListPokemon = listBox;
         }
+
+        // pokemon
         public void AddPokemon(ProfilePokemon profile)
         {
-            ListPokemon.Add(profile);
+            if (ListPokemon.Count < 6)
+            {
+                ListPokemon.Add(profile);
+            }
+            else
+            {
+                do
+                {
+                    PartyFull();
+                } while (ListPokemon.Count > 5);
+                ListPokemon.Add(profile);
+            }
         }
+        private void PartyFull()
+        {
+            int n = ConsoleMenu.ShowMenu(ConsoleColor.Red, ListPokemon.Select(p => p.GetName()).ToList(), "Party is full, select a pokémon to remove:");
+            Console.WriteLine($"{ListPokemon[n].GetName()} has been released!");
+            RemovePokémon(ListPokemon[n]);
+        }
+        private void RemovePokémon(ProfilePokemon pokemon)
+        {
+            ListPokemon.Remove(pokemon);
+        }
+
+        // item
         public void DrawItemCard(int n)
         {
             
@@ -41,8 +68,33 @@ namespace ProjetoPokemon.Entities
                 if(ListCards.ContainsKey(card)) ListCards[card]++;
                 else ListCards.Add(card, 1);
             }
+            if (ListCards.Values.Sum() > 6)
+            {
+                do
+                {
+                    BagFull();
+                } while (ListCards.Values.Sum() > 6);
+            }
         }
-        public ItemCard? SelectItem(TypeItemCard type)
+        private void BagFull()
+        {
+            var itemList = ListCards.Keys.ToList();
+            int n = ConsoleMenu.ShowMenu(ConsoleColor.Red, itemList.Select(p => p.Name).ToList(), "Bag is full, select a item to remove:");
+            ItemCard item = itemList[n];
+            Console.WriteLine($"{item.Name} has been removed!");
+            RemoveItemCard(item);
+        }
+        private void RemoveItemCard(ItemCard card)
+        {
+            if (ListCards.ContainsKey(card))
+            {
+                ListCards[card]--;
+                if (ListCards[card] <= 0)
+                    ListCards.Remove(card);
+            }
+        }
+
+        public ItemCard? UseItemCard(TypeItemCard type)
         {
             if (ListCards == null || ListCards.Count == 0)
                 return null;
@@ -73,17 +125,8 @@ namespace ProjetoPokemon.Entities
                 return null;
             }
 
-            // Obtém carta selecionada
             ItemCard selected = itemList[choice];
-
-            // Reduz contador ou remove totalmente
-            if (ListCards.ContainsKey(selected))
-            {
-                ListCards[selected]--;
-                if (ListCards[selected] <= 0)
-                    ListCards.Remove(selected);
-            }
-
+            RemoveItemCard(selected);
             return selected;
         }
         public ProfilePokemon SelectPokemon(ConsoleColor color)
@@ -94,17 +137,14 @@ namespace ProjetoPokemon.Entities
             }
             List<ProfilePokemon> listPokemon = ListPokemon.Where(p => p.Conditions != StatusConditions.KNOCKED).ToList();
             int index = ConsoleMenu.ShowMenu(color, listPokemon.Select(m => m.ToString()).ToList(), $"Choose {Nickname}'s Pokémon");
-            ProfilePokemon pokemon = listPokemon[index];
-            BattleLog.AddLog($"## {Nickname} selected {pokemon.NickPokemon} as their Pokémon.\n" + pokemon.Pokemon.ToString());
-            if (pokemon.MovesPokemon.Any(p => p.MoveID == 173))
-            {
-                int typeCount = DiceRollService.RollDice(1, Enum.GetValues(typeof(TypePokemon)).Length - 1);
-                Move filtredMove = pokemon.MovesPokemon.Where(p => p.MoveID == 173).First();
-                filtredMove.ChangeType((TypePokemon)typeCount);
-            }
+            ProfilePokemon pokemon = listPokemon[index].Clone();
+
+            // HiddenPower
+            EffectControl.HiddenPower(pokemon);
+
             return pokemon;
         }
-        public static Pokemon ChoosePokemon(int[] number)
+        private static Pokemon FirstPokemon(int[] number)
         {
             List<Pokemon> List = DataLists.AllPokemons.ToList();
             Pokemon pokemon = ConsoleMenu.ShowMenu(List.Where(p => number.Contains(p.NumberID)).ToDictionary(p => p, p => p.Name), "Choose a initial Pokemon");
@@ -123,11 +163,11 @@ namespace ProjetoPokemon.Entities
             { newTrainerName = "Trainer"; }
             BoxPokemon newProfile = new BoxPokemon(newTrainerName);
             Console.WriteLine($"Choose your initial Pokémon:");
-                var pokemon = ChoosePokemon(new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
+                var pokemon = FirstPokemon(new int[] { 1, 4, 7 }); // Exemplo: escolher entre Bulbasaur, Charmander e Squirtle
                 var initialPokemon = new ProfilePokemon(pokemon, pokemon.Name, 0);
                 initialPokemon.PutNicknamePokemon();
                 newProfile.AddPokemon(initialPokemon);
-            Console.WriteLine($"{initialPokemon.NickPokemon} added to your box!\n");
+            Console.WriteLine($"{initialPokemon.Name} added to your box!\n");
             DataLists.AddProfile(newProfile);
         }
         public void RecoverPokémon()
@@ -209,7 +249,7 @@ namespace ProjetoPokemon.Entities
                             profile.SetShiny(shiny);
 
                             pokemons.Add(profile);
-                            Console.WriteLine(profile.NickPokemon + " adicionado!");
+                            Console.WriteLine(profile.Name + " adicionado!");
                         }
                     }
                 }
@@ -267,7 +307,7 @@ namespace ProjetoPokemon.Entities
             {
                 int cardID = p.AttachCard?.Id ?? 0;
                 int status = (int)p.Conditions;
-                string pName = string.IsNullOrWhiteSpace(p.NickPokemon) ? "" : p.NickPokemon;
+                string pName = string.IsNullOrWhiteSpace(p.Name) ? "" : p.Name;
                 string shinyFlag = p.Shiny ? ", *" : "";
                 result += $"{p.Pokemon.NumberID} = {p.LevelExp} \"{pName}\", {cardID}, {status}{shinyFlag}{nl}";
             }

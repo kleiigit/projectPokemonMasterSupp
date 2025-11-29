@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using ProjetoPokemon.Entities;
 using ProjetoPokemon.Enums;
 using ProjetoPokemon.Services;
@@ -15,19 +16,24 @@ namespace ProjetoPokemon.Data
         private static readonly string trainerPath;
         private static readonly string itemCardPath;
         private static readonly string preferencesPath;
+        private static readonly string simulationPath;
 
         // Bloco estático executado apenas uma vez quando a classe é usada
         static DataBaseControl()
         {
             string exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             string relativePath = Path.Combine(exeDirectory, @"..\..\..\Data");
+            string relativerSimulationPath = Path.Combine(exeDirectory, @"..\..\..\Simulations");
+
             pathData = Path.GetFullPath(relativePath);
+            simulationPath = Path.GetFullPath(relativerSimulationPath);
 
             movesPath = Path.Combine(pathData, "MovesPokemon.xlsx");
             pokemonPath = Path.Combine(pathData, "Pokemon.xlsx");
             trainerPath = Path.Combine(pathData, "ProfileTrainer.txt");
             itemCardPath = Path.Combine(pathData, "ItemCard.xlsx");
             preferencesPath = Path.Combine(pathData, "Preferences.txt");
+            
         }
         public static void DataBase()
         {
@@ -67,7 +73,7 @@ namespace ProjetoPokemon.Data
                         string name = row.Cell(2).GetString();
                         if (string.IsNullOrWhiteSpace(name))
                         {
-                            Console.WriteLine($"Pokémon ID {numberID} Error (NickPokemon error).");
+                            Console.WriteLine($"Pokémon ID {numberID} Error (Name error).");
                             continue;
                         }
 
@@ -215,7 +221,7 @@ namespace ProjetoPokemon.Data
                                 }
                             }
                         }
-                        else pokeMoves.Add(new Move(0, TypePokemon.None, "Sem ataque", 0, 6));
+                        else pokeMoves.Add(Move.Null());
 
                         // INSTANCE
                         Pokemon pokemon = new Pokemon(
@@ -337,7 +343,7 @@ namespace ProjetoPokemon.Data
             using (var workbook = new XLWorkbook(itemCardPath))
             {
                 var worksheet = workbook.Worksheet(1);
-                var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
+                    var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
 
                 foreach (var row in rows)
                 {
@@ -349,7 +355,7 @@ namespace ProjetoPokemon.Data
                         string name = row.Cell(2).GetString();
                         if (string.IsNullOrWhiteSpace(name))
                         {
-                            Console.WriteLine($"Item ID {numberID} Error (NickPokemon error).");
+                            Console.WriteLine($"Item ID {numberID} Error (Name error).");
                             continue;
                         }
                         string description = row.Cell(6).GetString();
@@ -490,6 +496,29 @@ namespace ProjetoPokemon.Data
                 Console.WriteLine($"Erro ao salvar profiles: {ex.Message}");
             }
             Console.WriteLine("Save...");
+        }
+        public static void SaveSimulations(List<string> lines)
+        {
+            try
+            {
+                if (!Directory.Exists(simulationPath))
+                    Directory.CreateDirectory(simulationPath);
+
+                string fileName = $"simulation_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+                string fullPath = Path.Combine(simulationPath, fileName);
+
+                using (StreamWriter writer = new StreamWriter(fullPath))
+                {
+                    foreach (string line in lines)
+                        writer.WriteLine(line);
+                }
+
+                Console.WriteLine($"Arquivo salvo em: {fullPath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao salvar simulação: {ex.Message}");
+            }
         }
     }
 }

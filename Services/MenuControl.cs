@@ -30,10 +30,10 @@ namespace ProjetoPokemon.Services
                 switch (index)
                 {
                     case 0: // Battle Wild Pokemon
-                        BattleSimService.BattleWildPokemon(activeProfile);
+                        BattleConfiguration.BattleWildPokemon(activeProfile);
                         break;
                     case 1: // Battle Trainer
-                        BattleSimService.BattleTrainer(true);
+                        BattleConfiguration.BattleTrainer(true);
                         break;
                     case 2: // Pokedex
                         List<string> _list = new List<string>() { "Pokémon", "Move"};
@@ -42,7 +42,7 @@ namespace ProjetoPokemon.Services
                         else PokedexService.MovePokedexByType();
                             break;
                     case 3: // PartyPokemon
-                        int pkmIndex = ConsoleMenu.ShowMenu(ConsoleColor.White, activeProfile.ListPokemon.Select(m => m.NickPokemon).ToList(), "Party Pokémon of " + activeProfile.Nickname);
+                        int pkmIndex = ConsoleMenu.ShowMenu(ConsoleColor.White, activeProfile.ListPokemon.Select(m => m.GetName()).ToList(), "Party Pokémon of " + activeProfile.Nickname);
                         PokemonMenu(activeProfile.ListPokemon[pkmIndex]);
                         break;
                     case 4: // Display Profile
@@ -53,7 +53,7 @@ namespace ProjetoPokemon.Services
                         activeProfile = BoxPokemon.ChooseProfileTrainer();
                         break;
                     case 6: // simulacro
-                        VictoryChanceService.ComparePokemon();
+                        SimulacroMenu();
                         Console.ReadLine();
                         break;
                     case 7: // preferences
@@ -71,32 +71,48 @@ namespace ProjetoPokemon.Services
         {
             List<string> _optionPokemon = new List<string>() { "Summary", "Attach Item", "Use Item", "Release", "Cancel"};
             if (pokemon.LevelExp >= pokemon.Pokemon.ExpToEvolve && pokemon.Pokemon.ExpToEvolve != 0) _optionPokemon.Add("*Evolve");
-            int index = ConsoleMenu.ShowMenu(ConsoleColor.Magenta, _optionPokemon, "Menu Pokemon " + pokemon.NickPokemon);
+            int index = ConsoleMenu.ShowMenu(ConsoleColor.Magenta, _optionPokemon, "Menu Pokemon " + pokemon.GetName());
             switch (index)
             {
                 case 0:
                     Console.WriteLine(pokemon.SummaryProfile());
                     break;
                 case 1:
-                    pokemon.AttachCard = activeProfile.SelectItem(TypeItemCard.Attach);
-                    if (pokemon.AttachCard != null) Console.WriteLine($"{pokemon.AttachCard.Name} was attached to " + pokemon.NickPokemon);
+                    pokemon.AttachCard = activeProfile.UseItemCard(TypeItemCard.Attach);
+                    if (pokemon.AttachCard != null) Console.WriteLine($"{pokemon.AttachCard.Name} was attached to " + pokemon.GetName());
                     break;
                 case 2:
-                    ItemCard? cardAction = activeProfile.SelectItem(TypeItemCard.Action);
+                    ItemCard? cardAction = activeProfile.UseItemCard(TypeItemCard.Action);
                     break;
                 case 3:
-                    if (ConsoleMenu.ShowYesNo("Do you want release " + pokemon.NickPokemon))
+                    if (ConsoleMenu.ShowYesNo("Do you want release " + pokemon.Name))
                     {
                         activeProfile.ListPokemon.Remove(pokemon);
-                        Console.WriteLine(pokemon.NickPokemon + " was released!");
+                        Console.WriteLine(pokemon.GetName() + " was released!");
                     }
                     break;
-                case 4: break;
+                case 4: break; // cancel
                 case 5:
                     pokemon.EvolutionPokemon();
                     break;
             }
             Console.ReadLine();
+        }
+        public static void SimulacroMenu()
+        {
+            TierSimulator.ListTier();
+            List<string> _optionSimulacro = new List<string>() { "Compare VS", "EspecificPokemon", "CheckPokemon", "Cancel" };
+            int index = ConsoleMenu.ShowMenu(ConsoleColor.Magenta, _optionSimulacro, "Menu Simulacro ");
+            switch (index)
+            {
+                case 0:
+                    VictoryChanceService.ComparePokemon();
+                    break;
+                case 1:
+                    Pokemon pokemon = PokedexService.SelectPokemon("Pokémon to Simulation");
+                    TierSimulator.EspecificPokemon(pokemon);
+                    break;
+            }
         }
     }
 }

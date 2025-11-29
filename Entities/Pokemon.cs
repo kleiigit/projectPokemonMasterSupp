@@ -1,5 +1,6 @@
 ﻿
 
+using DocumentFormat.OpenXml.Drawing.Charts;
 using ProjetoPokemon.Enums;
 
 namespace ProjetoPokemon.Entities
@@ -70,19 +71,26 @@ namespace ProjetoPokemon.Entities
             // Copia das abilities (cada Ability deve ser clonável ou imutável)
             Abilities = new List<Ability>(other.Abilities);
 
-            // Copia profunda dos movimentos
+            Moves = CopyMoves(other);
+
+            CathRate = Catchrate(); // recalcula taxa de captura se necessário
+        }
+        public List<Move> CopyMoves(Pokemon other)
+        {
             Moves = new List<Move>();
             foreach (var move in other.Moves)
             {
-                var moveCopy = new Move(move.MoveID, move.Type, move.Name, move.Power, move.Effects, move.DiceSides, move.EffectRoll);
-                //if (move.Type == Type || move.Type == StabType) moveCopy.Power = Move.StabMove(move.Power);
+                Move moveCopy = move.Copy(); // usa cópia profunda oficial
+
+                // Se for necessário aplicar STAB durante a clonagem, descomente:
+                // if (move.Type == Type || move.Type == StabType)
+                //     moveCopy.Power = Move.StabMove(moveCopy.Power);
 
                 Moves.Add(moveCopy);
             }
 
-            CathRate = Catchrate(); // recalcula taxa de captura se necessário
+            return Moves;
         }
-
         private int Catchrate()
         {
             if (LevelBase >= 7)

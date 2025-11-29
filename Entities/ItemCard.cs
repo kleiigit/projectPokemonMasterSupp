@@ -2,6 +2,7 @@
 
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
+using ProjetoPokemon.Entities.Battlers;
 using ProjetoPokemon.Enums;
 using ProjetoPokemon.Services;
 
@@ -34,47 +35,48 @@ namespace ProjetoPokemon.Entities
             Description = description;
         }
 
-        public void BattleCard(BattlerManager user, BattlerManager target)
+        public void BattleCard(Battler user, Battler target)
         {
             if (user.UsedCard == null) return;
             if (Type == TypeItemCard.Battle)
             {
                 foreach (EffectManager effect in Effects)
                 {
-                    BattlerManager targetEffects = effect.TargetEffect == 'W'? user : target;
+                    Battler targetEffects = effect.TargetEffect == 'W'? user : target;
                     string[] condSplit = new string[1];
                     if(effect.EffectCond != null) condSplit = effect.EffectCond.Split(','); // number of target, effec >>>
                     switch (effect.EffectType)
                     {
                         case EffectType.ADDROLL:
-                            targetEffects.CardBonus += effect.BonusEffect;
-                            BattleLog.AddLog($"{user.UsedCard.Name} add bonus roll of {targetEffects.SelectedPokemon.NickPokemon}.");
+                            targetEffects.Total.CardBonus += effect.BonusEffect;
+                            BattleLog.AddLog($"{user.UsedCard.Name} add bonus roll of {targetEffects.Pokemon.Name}.");
                             break;
                         case EffectType.TWODICES:
-                            targetEffects.NumberDices += effect.TargetEffect == 'W' ? +1 : -1;
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices.");
+                            targetEffects.Total.NumberDices += effect.TargetEffect == 'W' ? +1 : -1;
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.Pokemon.Name} dices.");
                             break;
                         case EffectType.THREEDICES:
-                            targetEffects.NumberDices += effect.TargetEffect == 'W' ? 2 : -2;
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices.");
+                            targetEffects.Total.NumberDices += effect.TargetEffect == 'W' ? 2 : -2;
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.Pokemon.Name} dices.");
                             break;
                         case EffectType.HEAL:
                             for (int i = 0; i < int.Parse(condSplit[0]); i++)
                             {
                                 List<ProfilePokemon> listPokemon = new List<ProfilePokemon>();
-                                if (user.TrainerBox != null)
+                                if (user is BattlerPlayer)
                                 {
+                                    BattlerPlayer player = (BattlerPlayer)user;
                                     if(effect.EffectCond == "KO,STATUS")
                                     {
-                                        listPokemon = user.TrainerBox.ListPokemon.Where(p => p.Conditions != StatusConditions.NORMAL).ToList();
+                                        listPokemon = player.TrainerBox.ListPokemon.Where(p => p.Conditions != StatusConditions.NORMAL).ToList();
                                     }
                                     else if (condSplit[1] == "KO")
                                     {
-                                        listPokemon = user.TrainerBox.ListPokemon.Where(p => p.Conditions == StatusConditions.KNOCKED).ToList();
+                                        listPokemon = player.TrainerBox.ListPokemon.Where(p => p.Conditions == StatusConditions.KNOCKED).ToList();
                                     }
                                     else if (condSplit[1] == "STATUS")
                                     {
-                                        listPokemon = user.TrainerBox.ListPokemon.Where(p => p.Conditions != StatusConditions.NORMAL 
+                                        listPokemon = player.TrainerBox.ListPokemon.Where(p => p.Conditions != StatusConditions.NORMAL 
                                         && p.Conditions != StatusConditions.KNOCKED).ToList();
                                     }  
                                 }
@@ -83,14 +85,14 @@ namespace ProjetoPokemon.Entities
                                 {
                                     int index = ConsoleMenu.ShowMenu(ConsoleColor.Magenta, listPokemon.Select(m => m.ToString()).ToList(), "Select a Pokemon to healing");
                                     listPokemon[index].Conditions = StatusConditions.NORMAL;
-                                    BattleLog.AddLog($"{listPokemon[index].NickPokemon} was healed.");
+                                    BattleLog.AddLog($"{listPokemon[index].Name} was healed.");
                                 }
                                 
                             }
                             break;
                         case EffectType.DICESIDE:
-                            targetEffects.UsedMove.ChangeSide(effect.BonusEffect);
-                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.SelectedPokemon.NickPokemon} dices sides.");
+                            targetEffects.SetDiceSide(effect.BonusEffect);
+                            BattleLog.AddLog($"{user.UsedCard.Name} change {targetEffects.Pokemon.Name} dices sides.");
                             break;
                     }
                     BattleLog.AddLog($"({user.UsedCard.Description})");

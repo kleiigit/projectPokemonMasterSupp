@@ -13,8 +13,6 @@ namespace ProjetoPokemon
             Console.ReadLine();
 
             MasterGame.CreateGameItemDeck();
-
-            DataLists.AllProfiles[0].DrawItemCard(20);
             // if (ConsoleMenu.ShowYesNo("Do you want create a new Trainer?"))  BoxPokemon.CreateTrainer();
 
 

@@ -36,6 +36,10 @@ namespace ProjetoPokemon.Entities
         }
         
         public static int DiceSidesMove(int diceSides) { if (diceSides == 0) diceSides = 6; return diceSides;}
+        public static Move Null()
+        {
+            return new Move(0, TypePokemon.None, "NO MOVE", 0, 6);
+        }
         public void StabMove() { if (Power != 0 && Power < 4) Power += 1;}
         public void RateWin(List<double[]> rate)
         {
@@ -89,7 +93,6 @@ namespace ProjetoPokemon.Entities
 
             if (!CanUse)
                 copiedMove.RechargeMove();
-
             return copiedMove;
         }
         public string SummaryMove()

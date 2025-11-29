@@ -1,15 +1,15 @@
-﻿using ProjetoPokemon.Data;
+﻿
+using DocumentFormat.OpenXml.Wordprocessing;
+using ProjetoPokemon.Data;
 using ProjetoPokemon.Enums;
 using ProjetoPokemon.Services;
-using System.Diagnostics.Tracing;
 
 namespace ProjetoPokemon.Entities
 {
     internal class ProfilePokemon
     {
-        public string NickPokemon { get; set; }
+        public string Name { get; set; }
         public Pokemon Pokemon { get; set; }
-        public List<Move> MovesPokemon { get; private set; } = new List<Move>();
         public int LevelExp { get; set; }
         public ItemCard? AttachCard { get; set; }
         public StatusConditions Conditions { get; set; }
@@ -22,19 +22,38 @@ namespace ProjetoPokemon.Entities
         public ProfilePokemon(Pokemon pokemon, string name, int level)
         {
             Pokemon = pokemon;
-            CopyMoves(pokemon);
-            NickPokemon = NickPokemon = string.IsNullOrWhiteSpace(name) ? pokemon.Name : name;
+            Name = Name = string.IsNullOrWhiteSpace(name) ? pokemon.Name : name;
             LevelExp = level;
             AttachCard = null;
             Conditions = StatusConditions.NORMAL;
         }
-        public void CopyMoves(Pokemon pokemon)
+        public ProfilePokemon(Pokemon pokemon) // wild pokemon
         {
-            MovesPokemon.Clear();
-            foreach( Move move in pokemon.Moves)
-            {
-                MovesPokemon.Add(move.Copy());
-            }
+            Pokemon = pokemon;
+            Name = pokemon.Name;
+            LevelExp = 0;
+            AttachCard = null;
+            Conditions = StatusConditions.NORMAL;
+        }
+        public ProfilePokemon Clone()
+        {
+            // Cria a nova instância usando o construtor básico
+            ProfilePokemon clone = new ProfilePokemon(this.Pokemon, this.Name, this.LevelExp);
+
+            // Copia propriedades simples
+            clone.Conditions = this.Conditions;
+            clone.ConditionCount = this.ConditionCount;
+            clone.CanAttack = this.CanAttack;
+            clone.Forms = this.Forms;
+
+            // Copia Shiny via método, já que a propriedade é privada set
+            if (this.Shiny)
+                clone.SetShiny(true);
+
+            // Copia AttachCard (deep copy se existir)
+            if (this.AttachCard != null)
+                clone.AttachCard = this.AttachCard.Copy(); // assumindo que exista Copy()
+            return clone;
         }
         // Métodos de Pokemon Profile
         public int LevelPokemon()
@@ -49,32 +68,15 @@ namespace ProjetoPokemon.Entities
                 Console.Write("Write a nickname: ");
                 newName = Console.ReadLine();
             }
-            NickPokemon = string.IsNullOrWhiteSpace(newName) ? Pokemon.Name : newName;
-        }
-        
-        public List<Move> GetMoveList(BattlerManager trainer) // filtra os moves
-        {
-            // Garante que há movimentos
-            if (MovesPokemon == null || MovesPokemon.Count == 0)
-                return new List<Move>();
-
-            // Remove Sleep Talk (ID 218)
-            List<Move> moveList = MovesPokemon
-                .Where(p => p.MoveID != 218 && p.CanUse)
-                .ToList();
-
-            // Se o Pokémon estiver sob efeito de Taunt, remove movimentos com poder 0
-            if (trainer.BuffsAndDebuffs.Contains(EffectType.TAUNT))
-                moveList = moveList.Where(p => p.Power > 0).ToList();
-            return moveList;
-        }
+            Name = string.IsNullOrWhiteSpace(newName) ? Pokemon.Name : newName;
+        }   
         public void LevelUpPokemon()
         {
             if (LevelExp < 6) 
             { 
-                LevelExp++; Console.WriteLine($"{NickPokemon} leveled up to {LevelPokemon()}!"); 
+                LevelExp++; Console.WriteLine($"{Name} leveled up to {LevelPokemon()}!"); 
             }
-            else Console.WriteLine($"O {NickPokemon} has already reached the maximum possible level. Level: {LevelPokemon()}");
+            else Console.WriteLine($"O {Name} has already reached the maximum possible level. Level: {LevelPokemon()}");
 
             EvolutionPokemon();
         }
@@ -82,7 +84,7 @@ namespace ProjetoPokemon.Entities
         {
             if (Pokemon.ExpToEvolve > 0 && LevelExp >= Pokemon.ExpToEvolve)
             {
-                Console.WriteLine(NickPokemon+" can evolve...");
+                Console.WriteLine(Name+" can evolve...");
                 List<Pokemon> evoPokemon = new List<Pokemon>();
                 string evolveOptions = "";
                 foreach (int evolveID in Pokemon.EvolveID)
@@ -96,14 +98,14 @@ namespace ProjetoPokemon.Entities
                     else { Console.WriteLine($"No evolution found for {Pokemon.Name} with ID {evolveID}."); }
                 }
                 Console.ReadLine();
-                if (ConsoleMenu.ShowYesNo($"Do you want evolve {NickPokemon}\n" + evolveOptions))
+                if (ConsoleMenu.ShowYesNo($"Do you want evolve {Name}\n" + evolveOptions))
                 {
                     if (evoPokemon.Count == 1)
                     {
                         Console.WriteLine($"{Pokemon.Name} evolved into {evoPokemon[0]}");
-                        if (Pokemon.Name == NickPokemon) NickPokemon = evoPokemon[0].Name;
+                        if (Pokemon.Name == Name) Name = evoPokemon[0].Name;
                         Pokemon = evoPokemon[0];
-                        CopyMoves(Pokemon);
+                        Pokemon.Moves = evoPokemon[0].Moves;
                     }
                     else
                     {
@@ -111,9 +113,9 @@ namespace ProjetoPokemon.Entities
                             evoPokemon.Select(evo => evo.ToString()).ToList(),
                             $"Select the evolution for {Pokemon.Name}:");
                         Console.WriteLine($"{Pokemon.Name} evolved into {evoPokemon[selectedEvoIndex].Name}");
-                        if (Pokemon.Name == NickPokemon) NickPokemon = evoPokemon[selectedEvoIndex].Name;
+                        if (Pokemon.Name == Name) Name = evoPokemon[selectedEvoIndex].Name;
                         Pokemon = evoPokemon[selectedEvoIndex];
-                        CopyMoves(Pokemon);
+                        Pokemon.Moves = evoPokemon[0].Moves;
                     }
                     LevelExp = LevelExp - Pokemon.ExpToEvolve;
                 }
@@ -123,10 +125,9 @@ namespace ProjetoPokemon.Entities
         {
             if (chance) Shiny = true;
         }
-
-        public string NicknamePokemon()
+        public string GetName()
         {
-            string nickname = NickPokemon;
+            string nickname = Name;
             if (nickname != Pokemon.Name)
             {
                 nickname += $" ({Pokemon.Name})";
@@ -152,11 +153,11 @@ namespace ProjetoPokemon.Entities
                 }
                 pokemonEvo += $" ( {namesEvo})";
             }
-            foreach(Move move in MovesPokemon) movesString += move.ToString() + "\n";
+            foreach (Move move in Pokemon.Moves) movesString += move.ToString() + "\n";
 
             return $"Summary:\n" +
                 $"{Pokemon.NumberID}# " +
-                $"{NicknamePokemon()} " +
+                $"{GetName()} " +
                 $"{Pokemon.GetStabType().ToUpper()}-TYPE " +
                 $"{Pokemon.GetStage()} " +
                 $"Gen {Pokemon.Generation}\n" +
@@ -174,7 +175,7 @@ namespace ProjetoPokemon.Entities
             if (Shiny) shinyTag = "*";
             if (Conditions != StatusConditions.NORMAL) status = $"[{Conditions.ToString()}]";
             if (AttachCard != null) attachItem = $" - Attached Item: {AttachCard.Name}";
-            return NickPokemon + shinyTag + $" {status} Level: {LevelPokemon()} - Info: {Pokemon.ToString()}" + attachItem;
+            return Name + shinyTag + $" {status} Level: {LevelPokemon()} - Info: {Pokemon.ToString()}" + attachItem;
         }
     }
 }
